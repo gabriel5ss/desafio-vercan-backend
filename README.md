@@ -1,4 +1,4 @@
-# Verkan — Backend
+# vercan — Backend
 
 API em Laravel 13 com autenticação Bearer e banco MySQL.
 
