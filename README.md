@@ -1,14 +1,14 @@
 # vercan — Backend
 
-API em Laravel 13 com autenticação Bearer e banco MySQL.
+API em Laravel 13 com autenticação Bearer e banco MySQL. 
+
+Frontend: https://github.com/gabriel5ss/desafio-vercan-frontend
 
 ## Docker
 
 Pré-requisitos: Docker Engine e Docker Compose. O Compose fica no projeto
 `desafio-vercan-front` e inicia o frontend, a API e o MySQL. Com os projetos
 lado a lado:
-
-https://github.com/gabriel5ss/desafio-vercan-frontend
 
 ```bash
 cd ../desafio-vercan-front
