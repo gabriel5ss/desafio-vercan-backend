@@ -65,3 +65,14 @@ php artisan test
 composer analyse
 vendor/bin/pint
 ```
+
+## Hooks locais do Git
+
+Para executar os testes, o PHPStan e a verificação do Pint antes de cada
+commit, ative o hook uma vez:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+O hook requer as dependências instaladas pelo `composer install`.
