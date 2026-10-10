@@ -8,6 +8,8 @@ Pré-requisitos: Docker Engine e Docker Compose. O Compose fica no projeto
 `desafio-vercan-front` e inicia o frontend, a API e o MySQL. Com os projetos
 lado a lado:
 
+https://github.com/gabriel5ss/desafio-vercan-frontend
+
 ```bash
 cd ../desafio-vercan-front
 HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up --build
