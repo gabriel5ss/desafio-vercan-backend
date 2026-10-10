@@ -1,20 +1,23 @@
 # Verkan — Backend
 
-API em Laravel 13 com autenticação Bearer e banco SQLite para desenvolvimento.
+API em Laravel 13 com autenticação Bearer e banco MySQL.
 
 ## Docker
 
 Pré-requisitos: Docker Engine e Docker Compose. O Compose fica no projeto
-`desafio-vercan-front` e inicia os dois serviços. Com os projetos lado a lado:
+`desafio-vercan-front` e inicia o frontend, a API e o MySQL. Com os projetos
+lado a lado:
 
 ```bash
 cd ../desafio-vercan-front
-docker compose up --build
+HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up --build
 ```
 
 A API fica em http://localhost:8000 e o frontend em http://localhost:3000. O
-container do backend cria a chave da aplicação e executa as migrations. Para
-criar o usuário de demonstração e carregar estados e cidades:
+container do backend cria a chave da aplicação e executa as migrations. O banco
+`vercan` usa o usuário de desenvolvimento `vercan`/`vercan`; os dados ficam no
+volume `mysql_data`. Para criar o usuário de demonstração e carregar estados e
+cidades:
 
 ```bash
 docker compose exec backend php artisan db:seed
@@ -28,16 +31,15 @@ os dados persistidos, use `docker compose down -v`.
 
 ## Execução manual
 
-Pré-requisitos: PHP 8.3 ou superior (foi utilizado o php 8.5.11), Composer e extensões PHP para BCMath, Intl,
-Mbstring, PDO SQLite e Zip. Também é necessário acesso à internet para carregar
-estados e cidades.
+Pré-requisitos: PHP 8.3 ou superior, Composer, MySQL e extensões PHP para
+BCMath, Intl, Mbstring, PDO MySQL e Zip. Também é necessário acesso à internet
+para carregar estados e cidades. Configure a conexão do banco no `.env`.
 
 Na pasta deste projeto:
 
 ```bash
 composer install
 cp .env.example .env
-touch database/database.sqlite
 php artisan key:generate
 php artisan migrate
 php artisan db:seed
