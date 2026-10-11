@@ -29,6 +29,18 @@ e cidades:
 docker compose exec backend php artisan db:seed
 ```
 
+### Portas
+
+O container escuta na porta `8089`, publicada como `8089` no host (`8089:8089`
+no `docker-compose.yml`). Se precisar trocar somente a porta acessada no host,
+altere o valor à esquerda, por exemplo `8090:8089`. Para trocar a porta interna
+da aplicação, mantenha sincronizados o valor à direita do mapeamento, o
+`EXPOSE` do Dockerfile, o `--port` do entrypoint e o health check.
+
+No `.env`, ajuste `APP_URL` para o endereço usado pelos clientes. Em produção,
+prefira a URL pública HTTPS da API; se um proxy encaminhar essa URL para o
+container, não é necessário expor a porta `8089` publicamente.
+
 O seeder de estados e cidades consulta o IBGE e precisa de acesso à internet.
 Usuário de demonstração: `teste@desafio.com` / `password`. Para encerrar, use
 `docker compose down`; os volumes são mantidos. `docker compose down -v` também
