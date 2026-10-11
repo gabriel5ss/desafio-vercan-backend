@@ -1,0 +1,96 @@
+name: Deploy Laravel Oracle ARM64
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercan-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Laravel Application
+
+    runs-on:
+      - self-hosted
+      - linux
+      - arm64
+      - oracle
+
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify environment
+        run: |
+          set -euo pipefail
+
+          uname -m
+          docker --version
+          docker compose version
+          rsync --version
+
+      - name: Deploy application
+        run: |
+          set -euo pipefail
+
+          DEPLOY_PATH="/opt/apps/vercan-backend"
+
+          mkdir -p "$DEPLOY_PATH"
+
+          if [ ! -f "$DEPLOY_PATH/.env" ]; then
+            echo "Missing $DEPLOY_PATH/.env; configure production environment before deploying." >&2
+            exit 1
+          fi
+
+          if ! grep -Eq '^APP_KEY=base64:.+' "$DEPLOY_PATH/.env"; then
+            echo "APP_KEY must be set in $DEPLOY_PATH/.env before deploying." >&2
+            exit 1
+          fi
+
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude '.env' \
+            --exclude 'storage/' \
+            --exclude 'vendor/' \
+            ./ "$DEPLOY_PATH/"
+
+          cd "$DEPLOY_PATH"
+
+          docker compose config --quiet
+          docker compose up -d --build \
+            --remove-orphans
+
+          docker compose ps
+
+      - name: Health check
+        run: |
+          set -euo pipefail
+
+          for i in $(seq 1 20); do
+            if curl -fsS \
+              http://127.0.0.1:8089/up; then
+              echo "Application healthy!"
+              exit 0
+            fi
+
+            sleep 3
+          done
+
+          echo "Health check failed."
+
+          cd /opt/apps/vercan-backend
+          docker compose logs --tail=100
+
+          exit 1

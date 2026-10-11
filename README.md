@@ -6,30 +6,33 @@ Frontend: https://github.com/gabriel5ss/desafio-vercan-frontend
 
 ## Docker
 
-Pré-requisitos: Docker Engine e Docker Compose. O Compose fica no projeto
-`desafio-vercan-front` e inicia o frontend, a API e o MySQL. Com os projetos
-lado a lado:
+Pré-requisitos: Docker Engine e Docker Compose. O backend pode ser executado
+sozinho, com seu próprio MySQL:
 
 ```bash
-cd ../desafio-vercan-front
-HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose up --build
+cp .env.example .env
+php artisan key:generate
+docker compose up -d --build
 ```
 
-A API fica em http://localhost:8000 e o frontend em http://localhost:3000. O
-container do backend cria a chave da aplicação e executa as migrations. O banco
-`vercan` usa o usuário de desenvolvimento `vercan`/`vercan`; os dados ficam no
-volume `mysql_data`. Para criar o usuário de demonstração e carregar estados e
-cidades:
+No servidor, mantenha um `.env` próprio no diretório de deploy, com `APP_KEY`,
+`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` e `DB_ROOT_PASSWORD` definidos.
+Use senhas fortes para o banco. O workflow preserva esse arquivo entre os
+deploys.
+
+A API fica em `http://localhost:8089` e o health check em `/up`. As migrations
+são executadas na inicialização. Os dados do MySQL e os arquivos de `storage`
+ficam em volumes Docker. Para criar o usuário de demonstração e carregar estados
+e cidades:
 
 ```bash
 docker compose exec backend php artisan db:seed
 ```
 
 O seeder de estados e cidades consulta o IBGE e precisa de acesso à internet.
-Usuário de demonstração: `teste@desafio.com` / `password`.
-
-Para encerrar, use `Ctrl+C` e execute `docker compose down`. Para apagar também
-os dados persistidos, use `docker compose down -v`.
+Usuário de demonstração: `teste@desafio.com` / `password`. Para encerrar, use
+`docker compose down`; os volumes são mantidos. `docker compose down -v` também
+apaga os dados persistidos.
 
 ## Execução manual
 
@@ -45,7 +48,7 @@ cp .env.example .env
 php artisan key:generate
 php artisan migrate
 php artisan db:seed
-php artisan serve --host=0.0.0.0 --port=8000
+php artisan serve --host=0.0.0.0 --port=8089
 ```
 
 O comando `db:seed` cria o usuário de demonstração e carrega estados e cidades
