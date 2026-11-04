@@ -1,12 +1,17 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/css/ubold.css',
+                'resources/js/ubold.js',
+            ],
+            assets: ['resources/images/ubold/**'],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
@@ -14,10 +19,18 @@ export default defineConfig({
                 }),
             ],
         }),
-        tailwindcss(),
     ],
     server: {
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: 'localhost',
+            clientPort: 5173,
+        },
         watch: {
+            usePolling: true,
+            interval: 250,
             ignored: ['**/storage/framework/views/**'],
         },
     },

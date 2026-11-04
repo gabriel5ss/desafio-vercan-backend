@@ -5,20 +5,24 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierIndexRequest;
 use App\Http\Requests\SupplierRequest;
-use App\Http\Resources\SupplierResource;
+use App\Models\City;
 use App\Models\Company;
 use App\Models\Individual;
+use App\Models\State;
 use App\Models\Supplier;
 use App\Services\ReceitaWsService;
 use App\Services\SupplierService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
-    public function index(SupplierIndexRequest $request): JsonResponse
+    public function index(SupplierIndexRequest $request): View
     {
         $filters = $request->validated();
         $search = trim((string) ($filters['search'] ?? ''));
@@ -37,9 +41,72 @@ class SupplierController extends Controller
         }
 
         $this->applySorting($query, $filters['sort_by'] ?? null, $filters['sort_direction'] ?? 'desc');
-        $suppliers = $query->paginate($pageSize);
+        $suppliers = $query->paginate($pageSize)->withQueryString();
 
-        return SupplierResource::collection($suppliers)->response();
+        return view('supplier.index', compact('filters', 'suppliers'));
+    }
+
+    public function create(): View
+    {
+        return view('supplier.create', $this->formOptions());
+    }
+
+    public function store(SupplierRequest $request, SupplierService $service): RedirectResponse
+    {
+        $supplier = $service->save($request->validated());
+
+        return redirect()->route('suppliers.show', $supplier)->with('status', 'Fornecedor cadastrado com sucesso.');
+    }
+
+    public function show(Supplier $supplier): View
+    {
+        $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
+
+        return view('supplier.show', compact('supplier'));
+    }
+
+    public function edit(Supplier $supplier): View
+    {
+        $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
+
+        return view('supplier.create', [...$this->formOptions(), 'supplier' => $supplier]);
+    }
+
+    public function update(SupplierRequest $request, Supplier $supplier, SupplierService $service): RedirectResponse
+    {
+        $supplier = $service->save($request->validated(), $supplier);
+
+        return redirect()->route('suppliers.show', $supplier)->with('status', 'Fornecedor atualizado com sucesso.');
+    }
+
+    public function destroy(Supplier $supplier, SupplierService $service): RedirectResponse
+    {
+        $service->delete($supplier);
+
+        return redirect()->route('suppliers.index')->with('status', 'Fornecedor removido com sucesso.');
+    }
+
+    public function lookupCnpj(string $cnpj, ReceitaWsService $service): JsonResponse
+    {
+        Validator::make(['cnpj' => $cnpj], ['cnpj' => ['required', 'regex:/^\d{14}$/']])->validate();
+        $company = $service->lookup($cnpj);
+
+        if (! $company) {
+            throw ValidationException::withMessages(['cnpj' => ['O CNPJ informado não pôde ser validado. Verifique o número e tente novamente.']]);
+        }
+
+        return response()->json(['data' => [
+            'corporate_name' => $company['nome'] ?? '',
+            'trade_name' => $company['fantasia'] ?? ($company['nome'] ?? ''),
+            'cnpj_status' => $company['situacao'] ?? '',
+            'postal_code' => $company['cep'] ?? '',
+            'street' => $company['logradouro'] ?? '',
+            'number' => $company['numero'] ?? '',
+            'complement' => $company['complemento'] ?? '',
+            'district' => $company['bairro'] ?? '',
+            'city' => $company['municipio'] ?? '',
+            'state' => $company['uf'] ?? '',
+        ]]);
     }
 
     /** @param Builder<Supplier> $query */
@@ -70,52 +137,12 @@ class SupplierController extends Controller
         $query->orderBy('suppliers.id');
     }
 
-    public function store(SupplierRequest $request, SupplierService $service): JsonResponse
+    /** @return array{states: Collection<int, State>, cities: Collection<int, City>} */
+    private function formOptions(): array
     {
-        $supplier = $service->save($request->validated());
-
-        return (new SupplierResource($supplier))->response()->setStatusCode(201);
-    }
-
-    public function show(Supplier $supplier): JsonResponse
-    {
-        return (new SupplierResource($supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods'])))->response();
-    }
-
-    public function update(SupplierRequest $request, Supplier $supplier, SupplierService $service): JsonResponse
-    {
-        $supplier = $service->save($request->validated(), $supplier);
-
-        return (new SupplierResource($supplier))->response();
-    }
-
-    public function destroy(Supplier $supplier, SupplierService $service): JsonResponse
-    {
-        $service->delete($supplier);
-
-        return response()->json(['data' => ['message' => 'Fornecedor removido com sucesso.']]);
-    }
-
-    public function lookupCnpj(string $cnpj, ReceitaWsService $service): JsonResponse
-    {
-        Validator::make(['cnpj' => $cnpj], ['cnpj' => ['required', 'regex:/^\d{14}$/']])->validate();
-        $company = $service->lookup($cnpj);
-
-        if (! $company) {
-            throw ValidationException::withMessages(['cnpj' => ['O CNPJ informado não pôde ser validado. Verifique o número e tente novamente.']]);
-        }
-
-        return response()->json(['data' => [
-            'corporate_name' => $company['nome'] ?? '',
-            'trade_name' => $company['fantasia'] ?? ($company['nome'] ?? ''),
-            'cnpj_status' => $company['situacao'] ?? '',
-            'postal_code' => $company['cep'] ?? '',
-            'street' => $company['logradouro'] ?? '',
-            'number' => $company['numero'] ?? '',
-            'complement' => $company['complemento'] ?? '',
-            'district' => $company['bairro'] ?? '',
-            'city' => $company['municipio'] ?? '',
-            'state' => $company['uf'] ?? '',
-        ]]);
+        return [
+            'states' => State::query()->orderBy('name')->get(['id', 'code', 'name']),
+            'cities' => City::query()->orderBy('name')->get(['id', 'state_id', 'name']),
+        ];
     }
 }

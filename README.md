@@ -4,42 +4,53 @@ API em Laravel 13 com autenticação Bearer e banco MySQL.
 
 Frontend: https://github.com/gabriel5ss/desafio-vercan-frontend
 
-## Docker
+## Docker (desenvolvimento)
 
 Pré-requisitos: Docker Engine e Docker Compose. O backend pode ser executado
 sozinho, com seu próprio MySQL:
 
 ```bash
 cp .env.example .env
-php artisan key:generate
+docker compose build laravel-app
+docker compose run --rm --no-deps --entrypoint sh laravel-app -c 'composer install --no-interaction --prefer-dist && php artisan key:generate --no-interaction'
 docker compose up -d --build
 ```
 
-No servidor, mantenha um `.env` próprio no diretório de deploy, com `APP_KEY`,
-`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` e `DB_ROOT_PASSWORD` definidos.
-Use senhas fortes para o banco. O workflow preserva esse arquivo entre os
-deploys.
+Mantenha `APP_KEY`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` e
+`DB_ROOT_PASSWORD` definidos no `.env`. Use um usuário da aplicação, como
+`vercan`, em `DB_USERNAME`; a imagem do MySQL não aceita `MYSQL_USER=root`.
 
-A API fica em `http://localhost:8089` e o health check em `/up`. As migrations
-são executadas na inicialização. Os dados do MySQL e os arquivos de `storage`
-ficam em volumes Docker. Para criar o usuário de demonstração e carregar estados
-e cidades:
+A aplicação fica em `http://localhost:8000` e o health check em `/up`.
+O serviço `laravel-app` instala as dependências PHP, incluindo as de
+desenvolvimento, e executa as migrations na inicialização. O serviço `vite`
+instala as dependências Node e executa `npm run dev` na porta `5173`.
+Não é necessário instalar PHP, Composer ou Node no host.
+
+O código é compartilhado com os containers por volume: alterações em CSS e
+JavaScript usam hot reload, alterações em Blade recarregam a página e mudanças
+em PHP ficam disponíveis sem reconstruir a imagem. O watcher usa polling para
+detectar alterações nos arquivos montados pelo Docker.
+
+As dependências `vendor` e `node_modules`, os dados do MySQL e os arquivos de
+`storage` ficam em volumes Docker. Depois de alterar `composer.lock` ou
+`package-lock.json`, reinicie o serviço correspondente para instalar as
+dependências: `docker compose restart laravel-app` ou `docker compose restart vite`.
+Para criar o usuário de demonstração e carregar estados e cidades:
 
 ```bash
-docker compose exec backend php artisan db:seed
+docker compose exec laravel-app php artisan db:seed
 ```
 
 ### Portas
 
-O container escuta na porta `8089`, publicada como `8089` no host (`8089:8089`
-no `docker-compose.yml`). Se precisar trocar somente a porta acessada no host,
-altere o valor à esquerda, por exemplo `8090:8089`. Para trocar a porta interna
-da aplicação, mantenha sincronizados o valor à direita do mapeamento, o
-`EXPOSE` do Dockerfile, o `--port` do entrypoint e o health check.
+O container escuta na porta `8000`, publicada apenas em `127.0.0.1` no host.
+Para trocar a porta acessada no host, defina `APP_PORT=8090` no `.env` e ajuste
+`APP_URL` para `http://localhost:8090`. O Vite usa a porta `5173` no host e no
+container, com HMR apontando para `localhost`. Ao alterar o Dockerfile ou o
+entrypoint PHP, reconstrua a imagem com `docker compose up -d --build`.
 
-No `.env`, ajuste `APP_URL` para o endereço usado pelos clientes. Em produção,
-prefira a URL pública HTTPS da API; se um proxy encaminhar essa URL para o
-container, não é necessário expor a porta `8089` publicamente.
+No `.env`, ajuste `APP_URL` para o endereço usado no navegador. Esta configuração
+Docker usa `APP_ENV=local` e `APP_DEBUG=true` para desenvolvimento.
 
 O seeder de estados e cidades consulta o IBGE e precisa de acesso à internet.
 Usuário de demonstração: `teste@desafio.com` / `password`. Para encerrar, use

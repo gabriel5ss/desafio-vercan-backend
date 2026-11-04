@@ -7,11 +7,11 @@ use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Services\PasswordResetService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class PasswordResetController extends Controller
 {
-    public function sendCode(PasswordResetRequest $request, PasswordResetService $service): JsonResponse
+    public function sendCode(PasswordResetRequest $request, PasswordResetService $service): RedirectResponse
     {
         $email = (string) $request->validated('email');
         $user = User::query()->where('email', $email)->first();
@@ -20,15 +20,13 @@ class PasswordResetController extends Controller
             $service->sendCode($user);
         }
 
-        return response()->json([
-            'message' => 'Se o e-mail estiver cadastrado, você receberá um código para redefinir sua senha.',
-        ]);
+        return back()->with('status', 'Se o e-mail estiver cadastrado, você receberá um código para redefinir sua senha.');
     }
 
-    public function reset(ResetPasswordRequest $request, PasswordResetService $service): JsonResponse
+    public function reset(ResetPasswordRequest $request, PasswordResetService $service): RedirectResponse
     {
         $service->resetPassword((string) $request->validated('email'), (string) $request->validated('code'), (string) $request->validated('password'));
 
-        return response()->json(['message' => 'Senha redefinida com sucesso.']);
+        return redirect()->route('login')->with('status', 'Senha redefinida com sucesso.');
     }
 }

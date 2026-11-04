@@ -4,47 +4,41 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
-        $user = User::query()->where('email', $credentials['email'])->first();
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if (! Auth::guard('web')->attempt($credentials)) {
             throw ValidationException::withMessages([
-                'email' => ['As credenciais informadas são inválidas.'],
+                'email' => 'Credenciais inválidas.',
             ]);
         }
 
-        $token = $user->createToken($credentials['device_name'] ?? 'web')->plainTextToken;
+        $request->session()->regenerate();
 
-        return response()->json([
-            'data' => [
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'user' => $user->only(['id', 'name', 'email']),
-            ],
-        ]);
+        return redirect()->intended(route('dashboard'));
     }
 
-    public function user(Request $request): JsonResponse
+    public function user(Request $request): Response
     {
-        return response()->json([
-            'data' => $request->user()->only(['id', 'name', 'email']),
-        ]);
+        return response()->view('auth.profile', ['user' => $request->user()]);
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout(Request $request): RedirectResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
 
-        return response()->json(['data' => ['message' => 'Sessão encerrada com sucesso.']]);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

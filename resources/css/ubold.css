@@ -1,0 +1,11 @@
+@import './ubold/bootstrap.min.css';
+@import './ubold/app.min.css';
+@import './ubold/icons.min.css';
+
+@font-face {
+    font-family: 'feather';
+    src: url('../fonts/ubold/feather.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
