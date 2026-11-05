@@ -90,11 +90,12 @@ class SupplierRequest extends FormRequest
             'condominium_address' => [Rule::requiredIf(fn (): bool => $this->boolean('condominium')), 'nullable', 'string', 'max:255'],
             'condominium_number' => [Rule::requiredIf(fn (): bool => $this->boolean('condominium')), 'nullable', 'string', 'max:30'],
             'observation' => ['nullable', 'array'],
+            'observation.content' => ['nullable', 'string'],
             'primary_contact' => ['required', 'array'],
             'primary_contact.phones' => ['required', 'array', 'min:1'],
             'primary_contact.phones.*.value' => ['required', 'regex:/^\d{10,11}$/'],
             'primary_contact.phones.*.label' => ['nullable', 'string', 'max:30'],
-            'primary_contact.emails' => ['sometimes', 'array'],
+            'primary_contact.emails' => ['required', 'array', 'min:1'],
             'primary_contact.emails.*.value' => ['required', 'email:rfc', 'max:255'],
             'primary_contact.emails.*.label' => ['nullable', 'string', 'max:30'],
             'additional_contacts' => ['sometimes', 'array'],
@@ -103,10 +104,10 @@ class SupplierRequest extends FormRequest
             'additional_contacts.*.position' => ['nullable', 'string', 'max:120'],
             'additional_contacts.*.phones' => ['sometimes', 'array'],
             'additional_contacts.*.phones.*.value' => ['required', 'regex:/^\d{10,11}$/'],
-            'additional_contacts.*.phones.*.label' => ['nullable', 'string', 'max:30'],
+            'additional_contacts.*.phones.*.label' => ['required', 'string', 'max:30'],
             'additional_contacts.*.emails' => ['sometimes', 'array'],
             'additional_contacts.*.emails.*.value' => ['required', 'email:rfc', 'max:255'],
-            'additional_contacts.*.emails.*.label' => ['nullable', 'string', 'max:30'],
+            'additional_contacts.*.emails.*.label' => ['required', 'string', 'max:30'],
         ];
     }
 

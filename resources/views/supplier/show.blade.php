@@ -1,7 +1,1 @@
-@extends('layouts.app')
-
-@section('title', 'Fornecedores')
-
-@section('content')
- show
-@endsection
+@extends('supplier.create', ['readOnly' => true])

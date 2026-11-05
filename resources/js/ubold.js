@@ -1,3 +1,9 @@
 import './ubold/head.js';
 import './ubold/vendor.min.js';
+import './vendor/ubold/jquery.mask.min.js';
 import './ubold/app.min.js';
+import './ubold/input-masks.js';
+import './ubold/supplier-form.js';
+import './vendor/ubold/jquery.dataTables.min.js';
+import './vendor/ubold/dataTables.bootstrap5.min.js';
+import './ubold/supplier-data-table.js';

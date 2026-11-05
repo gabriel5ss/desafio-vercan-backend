@@ -1,6 +1,7 @@
 @import './ubold/bootstrap.min.css';
 @import './ubold/app.min.css';
 @import './ubold/icons.min.css';
+@import './ubold/dataTables.bootstrap5.min.css';
 
 @font-face {
     font-family: 'feather';
@@ -8,4 +9,45 @@
     font-weight: normal;
     font-style: normal;
     font-display: block;
+}
+
+.form-card > .card-header {
+    padding: var(--ct-card-spacer-y) var(--ct-card-spacer-x) 0.75rem;
+}
+
+.form-card > .card-header > .card-title {
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+.form-card > .form-card-divider {
+    margin: 0 var(--ct-card-spacer-x);
+    border-color: var(--ct-border-color);
+    opacity: 1;
+}
+
+.form-card > .collapse > .card-body,
+.form-card > .collapsing > .card-body {
+    padding-top: 1rem;
+}
+
+.card-collapse-toggle {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.card-collapse-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.card-collapse-toggle[aria-expanded="true"] .card-collapse-arrow {
+    transform: rotate(180deg);
+}
+
+#supplier-observations .ck-editor__editable_inline {
+    min-height: 180px;
 }

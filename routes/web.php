@@ -5,13 +5,13 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/home', 301);
+Route::redirect('/', '/login', 301);
 
-Route::view('/home', 'ubold.static.static')->name('static');
+// Route::view('/home', 'ubold.static.static')->name('static');
 
 Route::middleware('guest')->group(function (): void {
     Route::view('/login', 'auth.login')->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('access_login');
 
     Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'sendCode'])

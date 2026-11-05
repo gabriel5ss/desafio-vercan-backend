@@ -7,7 +7,7 @@
             </div>
             <div class="col-md-6">
                 <div class="d-none d-md-flex gap-4 align-item-center justify-content-md-end footer-links">
-                    <a href="{{ route('static') }}">Painel</a>
+                    <a href="{{ route('dashboard') }}">Painel</a>
                     <a href="#">Fornecedores</a>
                 </div>
             </div>

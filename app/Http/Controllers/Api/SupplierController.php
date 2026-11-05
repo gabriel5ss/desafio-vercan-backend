@@ -5,78 +5,93 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierIndexRequest;
 use App\Http\Requests\SupplierRequest;
-use App\Models\City;
-use App\Models\Company;
-use App\Models\Individual;
-use App\Models\State;
 use App\Models\Supplier;
 use App\Services\ReceitaWsService;
 use App\Services\SupplierService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Yajra\DataTables\Facades\DataTables;
 
 class SupplierController extends Controller
 {
-    public function index(SupplierIndexRequest $request): View
+    public function index(): View
+    {
+        return view('supplier.index');
+    }
+
+    public function indexApi(SupplierIndexRequest $request): JsonResponse
     {
         $filters = $request->validated();
-        $search = trim((string) ($filters['search'] ?? ''));
-        $pageSize = (int) ($filters['per_page'] ?? 15);
-        $query = Supplier::with(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
+        $search = trim((string) ($filters['search']['value'] ?? ''));
+        $order = $filters['order'][0] ?? null;
+        $sortBy = $order === null ? null : $filters['columns'][(int) $order['column']]['name'];
 
-        if ($search !== '') {
-            $query->whereHasMorph('supplierable', [Individual::class], function ($personQuery) use ($search): void {
-                $personQuery->where('name', 'like', "%{$search}%")
-                    ->orWhere('cpf', 'like', "%{$search}%");
-            })->orWhereHasMorph('supplierable', [Company::class], function ($personQuery) use ($search): void {
-                $personQuery->where('corporate_name', 'like', "%{$search}%")
-                    ->orWhere('trade_name', 'like', "%{$search}%")
-                    ->orWhere('cnpj', 'like', "%{$search}%");
-            });
-        }
+        $query = Supplier::with('supplierable')->select('suppliers.*');
 
-        $this->applySorting($query, $filters['sort_by'] ?? null, $filters['sort_direction'] ?? 'desc');
-        $suppliers = $query->paginate($pageSize)->withQueryString();
-
-        return view('supplier.index', compact('filters', 'suppliers'));
+        return DataTables::eloquent($query)
+            ->filter(function () use ($query, $search): void {
+                $query->searchTerm($search);
+            })
+            ->order(function () use ($query, $order, $sortBy): void {
+                $query->applySorting(
+                    $sortBy,
+                    $order['dir'] ?? 'desc',
+                );
+            })
+            ->addColumn('name', fn (Supplier $supplier): ?string => $supplier->name)
+            ->addColumn('trade_name', fn (Supplier $supplier): string => $supplier->trade_name)
+            ->addColumn('document', fn (Supplier $supplier): ?string => $supplier->document)
+            ->addColumn('show_url', fn (Supplier $supplier): string => route('suppliers.show', $supplier))
+            ->addColumn('edit_url', fn (Supplier $supplier): string => route('suppliers.edit', $supplier))
+            ->addColumn('delete_url', fn (Supplier $supplier): string => route('suppliers.destroy', $supplier))
+            ->only(['name', 'trade_name', 'document', 'active', 'show_url', 'edit_url', 'delete_url'])
+            ->escapeColumns([])
+            ->toJson();
     }
 
     public function create(): View
     {
-        return view('supplier.create', $this->formOptions());
+        ['states' => $states, 'cities' => $cities] = Supplier::formOptions();
+        $formData = Supplier::formData();
+
+        return view('supplier.create', compact('states', 'cities', 'formData'));
     }
 
     public function store(SupplierRequest $request, SupplierService $service): RedirectResponse
     {
         $supplier = $service->save($request->validated());
 
-        return redirect()->route('suppliers.show', $supplier)->with('status', 'Fornecedor cadastrado com sucesso.');
+        return redirect()->route('suppliers.index', $supplier)->with('status', 'Fornecedor cadastrado com sucesso.');
     }
 
     public function show(Supplier $supplier): View
     {
         $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
 
-        return view('supplier.show', compact('supplier'));
+        ['states' => $states, 'cities' => $cities] = Supplier::formOptions();
+        $formData = Supplier::formData($supplier);
+
+        return view('supplier.show', compact('states', 'cities', 'supplier', 'formData'));
     }
 
     public function edit(Supplier $supplier): View
     {
         $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
 
-        return view('supplier.create', [...$this->formOptions(), 'supplier' => $supplier]);
+        ['states' => $states, 'cities' => $cities] = Supplier::formOptions();
+        $formData = Supplier::formData($supplier);
+
+        return view('supplier.create', compact('states', 'cities', 'supplier', 'formData'));
     }
 
     public function update(SupplierRequest $request, Supplier $supplier, SupplierService $service): RedirectResponse
     {
         $supplier = $service->save($request->validated(), $supplier);
 
-        return redirect()->route('suppliers.show', $supplier)->with('status', 'Fornecedor atualizado com sucesso.');
+        return redirect()->route('suppliers.index', $supplier)->with('status', 'Fornecedor atualizado com sucesso.');
     }
 
     public function destroy(Supplier $supplier, SupplierService $service): RedirectResponse
@@ -107,42 +122,5 @@ class SupplierController extends Controller
             'city' => $company['municipio'] ?? '',
             'state' => $company['uf'] ?? '',
         ]]);
-    }
-
-    /** @param Builder<Supplier> $query */
-    private function applySorting(Builder $query, ?string $sortBy, string $direction): void
-    {
-        if ($sortBy === null) {
-            $query->latest();
-
-            return;
-        }
-
-        if ($sortBy === 'active') {
-            $query->orderBy('suppliers.active', $direction);
-        } else {
-            $fields = [
-                'name' => ['corporate_name', 'name'],
-                'trade_name' => ['trade_name', 'nickname'],
-                'document' => ['cnpj', 'cpf'],
-            ];
-            [$companyField, $individualField] = $fields[$sortBy] ?? $fields['name'];
-
-            $query->orderByRaw(
-                "CASE WHEN suppliers.supplierable_type = ? THEN (SELECT companies.{$companyField} FROM companies WHERE companies.id = suppliers.supplierable_id) ELSE (SELECT individuals.{$individualField} FROM individuals WHERE individuals.id = suppliers.supplierable_id) END {$direction}",
-                ['company'],
-            );
-        }
-
-        $query->orderBy('suppliers.id');
-    }
-
-    /** @return array{states: Collection<int, State>, cities: Collection<int, City>} */
-    private function formOptions(): array
-    {
-        return [
-            'states' => State::query()->orderBy('name')->get(['id', 'code', 'name']),
-            'cities' => City::query()->orderBy('name')->get(['id', 'state_id', 'name']),
-        ];
     }
 }

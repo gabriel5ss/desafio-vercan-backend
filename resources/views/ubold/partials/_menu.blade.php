@@ -4,13 +4,13 @@
     <!-- Brand Logo -->
     <div class="logo-box">
         <!-- Brand Logo Light -->
-        <a href="{{ route('static') }}" class="logo-light">
+        <a href="{{ route('dashboard') }}" class="logo-light">
             <img src="{{ Vite::asset('resources/images/ubold/logo-light.png') }}" alt="logo" class="logo-lg">
             <img src="{{ Vite::asset('resources/images/ubold/logo-sm.png') }}" alt="small logo" class="logo-sm">
         </a>
 
         <!-- Brand Logo Dark -->
-        <a href="{{ route('static') }}" class="logo-dark">
+        <a href="{{ route('dashboard') }}" class="logo-dark">
             <img src="{{ Vite::asset('resources/images/ubold/logo-dark.png') }}" alt="dark logo" class="logo-lg">
             <img src="{{ Vite::asset('resources/images/ubold/logo-sm.png') }}" alt="small logo" class="logo-sm">
         </a>
@@ -25,14 +25,14 @@
             <li class="menu-title">Navigation</li>
 
             <li class="menu-item">
-                <a href="{{ route('static') }}" class="menu-link">
+                <a href="{{ route('dashboard') }}" class="menu-link">
                     <span class="menu-icon"><i data-feather="calendar"></i></span>
                     <span class="menu-text"> Home </span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="#" class="menu-link">
+                <a href="{{ route('suppliers.index') }}" class="menu-link">
                     <span class="menu-icon"><i data-feather="users"></i></span>
                     <span class="menu-text"> Fornecedores </span>
                 </a>
@@ -41,10 +41,13 @@
             <li class="menu-title">Logout</li>
 
             <li class="menu-item">
-                <a href="#" class="menu-link">
+                <button type="submit" form="logout-form" class="menu-link w-100 border-0 bg-transparent text-start">
                     <span class="menu-icon"><i data-feather="log-out"></i></span>
                     <span class="menu-text"> Sair </span>
-                </a>
+                </button>
+                <form id="logout-form" method="POST" action="{{ route('logout') }}" hidden>
+                    @csrf
+                </form>
             </li>
         </ul>
         <!--- End Menu -->
