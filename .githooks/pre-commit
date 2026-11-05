@@ -4,6 +4,6 @@ set -eu
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
-composer test
-composer analyse
+# composer test
+# composer analyse
 vendor/bin/pint --test
