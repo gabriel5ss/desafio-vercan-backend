@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\City;
-use App\Models\Company;
-use App\Models\Individual;
-use App\Models\Supplier;
 use Illuminate\Database\Seeder;
+use Modules\Supplier\Models\Company;
+use Modules\Supplier\Models\Individual;
+use Modules\Supplier\Models\Supplier;
 use RuntimeException;
 
 class SupplierDemoSeeder extends Seeder

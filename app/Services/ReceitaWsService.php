@@ -17,7 +17,7 @@ class ReceitaWsService
         try {
             return Cache::remember("receitaws:{$cnpj}", now()->addMinutes(6), function () use ($cnpj): ?array {
                 $response = Http::acceptJson()->connectTimeout(3)->timeout(8)
-                    ->get("https://receitaws.com.br/v1/cnpj/{$cnpj}");
+                    ->get(config('services.receitaws_url')."{$cnpj}");
 
                 if (! $response->successful()) {
                     throw new ServiceUnavailableHttpException(null, 'O serviço de consulta de CNPJ está indisponível.');

@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/ubold.css',
                 'resources/js/ubold.js',
+                'Modules/Supplier/resources/assets/js/app.js',
             ],
             assets: ['resources/images/ubold/**'],
             refresh: true,

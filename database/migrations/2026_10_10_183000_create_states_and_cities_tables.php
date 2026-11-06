@@ -28,28 +28,10 @@ return new class extends Migration
                 $table->index(['state_id', 'name']);
             });
         }
-
-        Schema::table('suppliers', function (Blueprint $table): void {
-            if (! Schema::hasColumn('suppliers', 'state_id')) {
-                $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
-            }
-            if (! Schema::hasColumn('suppliers', 'city_id')) {
-                $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
-            }
-        });
     }
 
     public function down(): void
     {
-        Schema::table('suppliers', function (Blueprint $table): void {
-            if (Schema::hasColumn('suppliers', 'city_id')) {
-                $table->dropConstrainedForeignId('city_id');
-            }
-            if (Schema::hasColumn('suppliers', 'state_id')) {
-                $table->dropConstrainedForeignId('state_id');
-            }
-        });
-
         Schema::dropIfExists('cities');
         Schema::dropIfExists('states');
     }

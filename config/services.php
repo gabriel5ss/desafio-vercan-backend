@@ -35,4 +35,5 @@ return [
         ],
     ],
 
+    'receitaws_url' => env('RECEITAWS_URL', ''),
 ];

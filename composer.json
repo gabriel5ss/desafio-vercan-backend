@@ -7,12 +7,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "coderflexx/laravel-presenter": "^2.2",
         "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "nwidart/laravel-modules": "^13.0",
+        "owen-it/laravel-auditing": "^14.0",
         "yajra/laravel-datatables-oracle": "^13.0"
     },
     "require-dev": {
+        "brianium/paratest": "^7.20",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.11",
         "laravel/boost": "^2.10",
@@ -75,6 +79,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "Modules/*/composer.json"
+            ]
         }
     },
     "config": {
@@ -83,7 +92,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "stable",

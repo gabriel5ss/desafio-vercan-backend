@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Company;
-use App\Models\Individual;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
+use Modules\Supplier\Models\Company;
+use Modules\Supplier\Models\Individual;
 
 class AppServiceProvider extends ServiceProvider
 {

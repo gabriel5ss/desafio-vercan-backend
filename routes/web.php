@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordResetController;
-use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login', 301);
@@ -26,11 +25,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [AuthController::class, 'user'])->name('profile');
     Route::view('/dashboard', 'dashboard.index')->name('dashboard');
 
-    Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-    Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
-    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
-    Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->whereNumber('supplier')->name('suppliers.edit');
-    Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->whereNumber('supplier')->name('suppliers.show');
-    Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->whereNumber('supplier')->name('suppliers.update');
-    Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->whereNumber('supplier')->name('suppliers.destroy');
+    // Route::get('/suppliers', [App\Http\Controllers\Api\SupplierController::class, 'index'])->name('suppliers.index');
+    // Route::get('/suppliers/create', [App\Http\Controllers\Api\SupplierController::class, 'create'])->name('suppliers.create');
+    // Route::post('/suppliers', [App\Http\Controllers\Api\SupplierController::class, 'store'])->name('suppliers.store');
+    // Route::get('/suppliers/{supplier}/edit', [App\Http\Controllers\Api\SupplierController::class, 'edit'])->whereNumber('supplier')->name('suppliers.edit');
+    // Route::get('/suppliers/{supplier}', [App\Http\Controllers\Api\SupplierController::class, 'show'])->whereNumber('supplier')->name('suppliers.show');
+    // Route::put('/suppliers/{supplier}', [App\Http\Controllers\Api\SupplierController::class, 'update'])->whereNumber('supplier')->name('suppliers.update');
+    // Route::delete('/suppliers/{supplier}', [App\Http\Controllers\Api\SupplierController::class, 'destroy'])->whereNumber('supplier')->name('suppliers.destroy');
 });

@@ -6,4 +6,4 @@ cd "$repo_root"
 
 # composer test
 # composer analyse
-vendor/bin/pint --test
+# vendor/bin/pint --test

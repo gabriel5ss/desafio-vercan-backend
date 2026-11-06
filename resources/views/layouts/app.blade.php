@@ -52,6 +52,6 @@
     <!-- END wrapper -->
 
     @include('ubold.partials._right-sidebar')
-
+    @stack('scripts')
 </body>
 </html>
