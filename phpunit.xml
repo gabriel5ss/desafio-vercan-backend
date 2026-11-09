@@ -6,12 +6,12 @@
 >
     <testsuites>
         <testsuite name="Unit">
-            <directory suffix="Test.php">tests/Unit</directory>
-            <directory suffix="Test.php">Modules/*/tests/Unit</directory>
+            <directory>tests/Unit</directory>
+            <directory>Modules/*/tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
-            <directory suffix="Test.php">tests/Feature</directory>
-            <directory suffix="Test.php">Modules/*/tests/Feature</directory>
+            <directory>tests/Feature</directory>
+            <directory>Modules/*/tests/Feature</directory>
         </testsuite>
     </testsuites>
     <source>
@@ -19,6 +19,13 @@
             <directory>app</directory>
             <directory>Modules/*/app</directory>
         </include>
+            <exclude>
+                <directory suffix=".php">Modules/*/config</directory>
+                <directory suffix=".php">Modules/*/database</directory>
+                <directory suffix=".php">Modules/*/resources</directory>
+                <directory suffix=".php">Modules/*/routes</directory>
+                <directory suffix=".php">Modules/*/tests</directory>
+            </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>

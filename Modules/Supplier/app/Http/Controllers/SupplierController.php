@@ -64,9 +64,9 @@ class SupplierController extends Controller
 
     public function store(SupplierRequest $request, SupplierService $service): RedirectResponse
     {
-        $supplier = $service->save($request->validated());
+        $service->save($request->validated());
 
-        return redirect()->route('suppliers.index', $supplier)->with('status', 'Fornecedor cadastrado com sucesso.');
+        return redirect()->route('suppliers.index')->with('status', 'Fornecedor cadastrado com sucesso.');
     }
 
     public function show(Supplier $supplier): View

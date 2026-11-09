@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fff0c498803b143bb45ed63865ca7a29",
+    "content-hash": "ab5cd20b4b6f6ad3207496f343fb16d4",
     "packages": [
         {
             "name": "brick/math",
@@ -7104,6 +7104,56 @@
                 "source": "https://github.com/iamcal/SQLParser/tree/v0.7"
             },
             "time": "2026-01-28T22:20:33+00:00"
+        },
+        {
+            "name": "jasonmccreary/laravel-test-assertions",
+            "version": "v2.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jasonmccreary/laravel-test-assertions.git",
+                "reference": "45bb6adbf16737eebcbdc5a31923b33099eed177"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/45bb6adbf16737eebcbdc5a31923b33099eed177",
+                "reference": "45bb6adbf16737eebcbdc5a31923b33099eed177",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/testing": "^11.0|^12.0|^13.0",
+                "mockery/mockery": "^1.4.4",
+                "php": "^8.1",
+                "phpunit/phpunit": "^11.0|^12.0|^13.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "JMac\\Testing\\AdditionalAssertionsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JMac\\Testing\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jason McCreary",
+                    "email": "jason@pureconcepts.net"
+                }
+            ],
+            "description": "A set of helpful assertions when testing Laravel applications.",
+            "support": {
+                "issues": "https://github.com/jasonmccreary/laravel-test-assertions/issues",
+                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.9.0"
+            },
+            "time": "2026-03-14T17:09:09+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",

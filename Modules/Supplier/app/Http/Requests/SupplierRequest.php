@@ -2,8 +2,8 @@
 
 namespace Modules\Supplier\Http\Requests;
 
-use App\Services\CnpjValidator;
-use App\Services\CpfValidator;
+use App\Services\Rules\CnpjValidatorRule;
+use App\Services\Rules\CpfValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Modules\Supplier\Models\Company;
@@ -62,7 +62,7 @@ class SupplierRequest extends FormRequest
             'type' => ['required', Rule::in(['individual', 'company'])],
             'name' => ['required_if:type,individual', 'nullable', 'string', 'max:255'],
             'cpf' => ['required_if:type,individual', 'nullable', 'digits:11', Rule::unique('individuals', 'cpf')->ignore($person instanceof Individual ? $person->id : null), function (string $attribute, mixed $value, \Closure $fail): void {
-                if (is_string($value) && $value !== '' && ! app(CpfValidator::class)->isValid($value)) {
+                if (is_string($value) && $value !== '' && ! app(CpfValidatorRule::class)->isValid($value)) {
                     $fail('O CPF informado é inválido.');
                 }
             }],
@@ -71,7 +71,7 @@ class SupplierRequest extends FormRequest
             'corporate_name' => ['required_if:type,company', 'nullable', 'string', 'max:255'],
             'trade_name' => ['required_if:type,company', 'nullable', 'string', 'max:255'],
             'cnpj' => ['required_if:type,company', 'nullable', 'digits:14', Rule::unique('companies', 'cnpj')->ignore($person instanceof Company ? $person->id : null), function (string $attribute, mixed $value, \Closure $fail): void {
-                if (is_string($value) && $value !== '' && (bool) app(CnpjValidator::class)->isValid($value)) {
+                if (is_string($value) && $value !== '' && ! app(CnpjValidatorRule::class)->isValid($value)) {
                     $fail('O CNPJ informado é inválido.');
                 }
             }],

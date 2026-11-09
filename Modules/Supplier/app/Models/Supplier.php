@@ -7,13 +7,16 @@ use App\Models\State;
 use Coderflex\LaravelPresenter\Concerns\CanPresent;
 use Coderflex\LaravelPresenter\Concerns\UsesPresenters;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\Supplier\Database\Factories\SupplierFactory;
 use Modules\Supplier\Presenters\SupplierPresenter;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -24,9 +27,13 @@ use OwenIt\Auditing\Contracts\Auditable;
  * @property-read string|null $document
  * @property-read Company|Individual|null $supplierable
  */
+#[UseFactory(SupplierFactory::class)]
 class Supplier extends Model implements Auditable, CanPresent
 {
     use AuditableTrait;
+
+    /** @use HasFactory<SupplierFactory> */
+    use HasFactory;
     use UsesPresenters;
 
     protected $presenters = [
@@ -44,13 +51,27 @@ class Supplier extends Model implements Auditable, CanPresent
     }
 
     /** @return Attribute<string|null, never> */
+
+    // usar isso
+    // getFormattedNameAttribute
+
+    // não usar isso
+    // name
     protected function name(): Attribute
     {
+        // não usar isso
         return Attribute::make(
             get: fn (): ?string => $this->supplierable instanceof Individual
                 ? $this->supplierable->name
                 : $this->supplierable?->corporate_name,
         );
+
+        // usar isso
+        // $name = $this->supplierable instanceof Individual
+        //     ? $this->supplierable->name
+        //     : $this->supplierable?->corporate_name;
+
+        // return $name;
     }
 
     /** @return Attribute<string, never> */

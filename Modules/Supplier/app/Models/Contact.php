@@ -2,14 +2,21 @@
 
 namespace Modules\Supplier\Models;
 
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Supplier\Database\Factories\ContactFactory;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
+#[UseFactory(ContactFactory::class)]
 class Contact extends Model implements Auditable
 {
     use AuditableTrait;
+
+    /** @use HasFactory<ContactFactory> */
+    use HasFactory;
 
     protected $fillable = ['is_primary', 'name', 'company', 'position'];
 
