@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Services;
 
 use App\Services\ReceitaWsService;
@@ -8,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Tests\TestCase;
 
-class ReceitaWsServiceTest extends TestCase
+final class ReceitaWsServiceTest extends TestCase
 {
     private ReceitaWsService $service;
 

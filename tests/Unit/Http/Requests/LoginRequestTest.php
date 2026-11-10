@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Requests;
 
 use App\Http\Requests\LoginRequest;
 use Override;
 use PHPUnit\Framework\TestCase;
 
-class LoginRequestTest extends TestCase
+final class LoginRequestTest extends TestCase
 {
     protected LoginRequest $loginFormRequest;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -15,7 +17,7 @@ use Modules\Supplier\Models\Supplier;
 use Modules\Supplier\Services\SupplierService;
 use Yajra\DataTables\Facades\DataTables;
 
-class SupplierController extends Controller
+final class SupplierController extends Controller
 {
     public function index(): View
     {
@@ -25,7 +27,7 @@ class SupplierController extends Controller
     public function indexApi(SupplierIndexRequest $request): JsonResponse
     {
         $filters = $request->validated();
-        $search = trim((string) ($filters['search']['value'] ?? ''));
+        $search = mb_trim((string) ($filters['search']['value'] ?? ''));
         $order = $filters['order'][0] ?? null;
         $sortBy = $order === null ? null : $filters['columns'][(int) $order['column']]['name'];
 

@@ -1,17 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Tests\Feature\Models;
 
 use Modules\Supplier\Models\Contact;
 use Modules\Supplier\Models\ContactMethod;
-use Modules\Supplier\Models\Supplier;
-use PHPUnit\Framework\Attributes\TestWith;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-class ContactTest extends TestCase
+final class ContactTest extends TestCase
 {
-    #[TestWith([1, true], 'primary contact')]
-    #[TestWith([0, false], 'additional contact')]
+    /** @return array<string, array{int, bool}> */
+    public static function isPrimaryCases(): array
+    {
+        return [
+            'primary contact' => [1, true],
+            'additional contact' => [0, false],
+        ];
+    }
+
+    #[DataProvider('isPrimaryCases')]
     public function test_get_is_primary_attribute(int $value, bool $expected): void
     {
         $contact = Contact::factory()->make(['supplier_id' => null, 'is_primary' => $value]);
@@ -21,13 +30,19 @@ class ContactTest extends TestCase
 
     public function test_methods(): void
     {
-        $supplier = Supplier::factory()->create();
-        $contact = Contact::factory()->create(['supplier_id' => $supplier->id]);
-        ContactMethod::factory()->create(['contact_id' => $contact->id, 'value' => '11999999999']);
-        ContactMethod::factory()->email()->create(['contact_id' => $contact->id, 'value' => 'contato@example.com']);
+        $contact = Contact::factory()
+            ->has(ContactMethod::factory()->state(['value' => '11999999999']), 'methods')
+            ->has(ContactMethod::factory()->email()->state(['value' => 'contato@example.com']), 'methods')
+            ->create();
+
+        ContactMethod::factory()->create();
 
         $methods = $contact->fresh()->methods;
 
         $this->assertCount(2, $methods);
+        $this->assertSame([
+            'email' => 'contato@example.com',
+            'phone' => '11999999999',
+        ], $methods->pluck('value', 'kind')->sortKeys()->all());
     }
 }

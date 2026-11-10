@@ -1,28 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Tests\Feature\Presenters;
 
+use Modules\Supplier\Database\Factories\SupplierFactory;
 use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Contact;
-use Modules\Supplier\Models\ContactMethod;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 use Override;
 use Tests\TestCase;
 
-class SupplierPresenterTest extends TestCase
+final class SupplierPresenterTest extends TestCase
 {
+    private SupplierFactory $supplier;
+
     #[Override]
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->supplier = Supplier::factory();
 
         $this->app['request']->setLaravelSession($this->app['session.store']);
     }
 
     public function test_default_data(): void
     {
-        $data = (new Supplier)->present()->formData();
+        $data = $this->supplier->newModel()->present()->formData();
 
         $this->assertSame('company', $data['type']);
         $this->assertSame(1, $data['active']);
@@ -37,11 +43,12 @@ class SupplierPresenterTest extends TestCase
 
     public function test_individual_data(): void
     {
-        $person = Individual::factory()->create(['name' => 'User', 'cpf' => '12345678909']);
-        $supplier = Supplier::factory()->for($person, 'supplierable')->create([
-            'active' => false,
-            'observation' => '{"content":"Observação"}',
-        ]);
+        $supplier = $this->supplier
+            ->for(Individual::factory()->state(['name' => 'User', 'cpf' => '12345678909']), 'supplierable')
+            ->create([
+                'active' => false,
+                'observation' => '{"content":"Observação"}',
+            ]);
 
         $data = $supplier->present()->formData();
 
@@ -55,8 +62,9 @@ class SupplierPresenterTest extends TestCase
 
     public function test_company_data(): void
     {
-        $company = Company::factory()->create(['corporate_name' => 'Empresa Ltda', 'cnpj' => '04252011000110']);
-        $supplier = Supplier::factory()->for($company, 'supplierable')->create();
+        $supplier = $this->supplier
+            ->for(Company::factory()->state(['corporate_name' => 'Empresa Ltda', 'cnpj' => '04252011000110']), 'supplierable')
+            ->create();
 
         $data = $supplier->present()->formData();
 
@@ -68,13 +76,21 @@ class SupplierPresenterTest extends TestCase
 
     public function test_contacts(): void
     {
-        $supplier = Supplier::factory()->create();
-        $primary = Contact::factory()->primary()->create(['supplier_id' => $supplier->id]);
-        $additional = Contact::factory()->create(['supplier_id' => $supplier->id, 'name' => 'User']);
-        ContactMethod::factory()->create(['contact_id' => $primary->id, 'value' => '11999999999']);
-        ContactMethod::factory()->email()->create(['contact_id' => $primary->id, 'value' => 'principal@example.com']);
-        ContactMethod::factory()->create(['contact_id' => $additional->id, 'value' => '21988887777']);
-        ContactMethod::factory()->email()->create(['contact_id' => $additional->id, 'value' => 'user@example.com']);
+        $supplier = $this->supplier->create();
+        $primaryContact = Contact::factory()
+            ->primary()
+            ->create(['supplier_id' => $supplier->id]);
+        $additionalContact = Contact::factory()
+            ->create(['supplier_id' => $supplier->id, 'name' => 'User']);
+
+        $primaryContact->methods()->createMany([
+            ['kind' => 'phone', 'value' => '11999999999'],
+            ['kind' => 'email', 'value' => 'principal@example.com'],
+        ]);
+        $additionalContact->methods()->createMany([
+            ['kind' => 'phone', 'value' => '21988887777'],
+            ['kind' => 'email', 'value' => 'user@example.com'],
+        ]);
 
         $data = $supplier->present()->formData();
 
@@ -103,7 +119,7 @@ class SupplierPresenterTest extends TestCase
             ]],
         ]]);
 
-        $data = (new Supplier)->present()->formData();
+        $data = $this->supplier->newModel()->present()->formData();
 
         $this->assertSame(['phones' => 3, 'emails' => 7], $data['next_contact_indexes']);
         $this->assertSame(4, $data['next_additional_contact_index']);

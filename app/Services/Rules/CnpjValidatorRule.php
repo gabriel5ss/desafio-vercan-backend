@@ -1,9 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Rules;
 
-class CnpjValidatorRule
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+final class CnpjValidatorRule implements ValidationRule
 {
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if (is_string($value) && $value !== '' && ! $this->isValid($value)) {
+            $fail('O CNPJ informado é inválido.');
+        }
+    }
+
     public function isValid(string $cnpj): bool
     {
         if (! preg_match('/^[0-9]{14}\z/', $cnpj)) {

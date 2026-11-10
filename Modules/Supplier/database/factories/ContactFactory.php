@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -7,7 +9,7 @@ use Modules\Supplier\Models\Contact;
 use Modules\Supplier\Models\Supplier;
 
 /** @extends Factory<Contact> */
-class ContactFactory extends Factory
+final class ContactFactory extends Factory
 {
     protected $model = Contact::class;
 

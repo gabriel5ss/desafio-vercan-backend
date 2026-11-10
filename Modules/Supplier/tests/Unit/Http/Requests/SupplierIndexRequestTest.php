@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Tests\Unit\Http\Requests;
 
 use Illuminate\Translation\ArrayLoader;
@@ -11,7 +13,7 @@ use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class SupplierIndexRequestTest extends TestCase
+final class SupplierIndexRequestTest extends TestCase
 {
     protected SupplierIndexRequest $request;
 
@@ -21,6 +23,32 @@ class SupplierIndexRequestTest extends TestCase
         parent::setUp();
 
         $this->request = new SupplierIndexRequest;
+    }
+
+    /** @return array<string, array<mixed>> */
+    public static function sortingCases(): array
+    {
+        $error = ['order.0.column' => ['A coluna selecionada não permite ordenação.']];
+
+        return [
+            'sortable column' => [
+                ['order' => [['column' => 0, 'dir' => 'asc']]],
+                [],
+            ],
+            'without sorting' => [[], []],
+            'column without name' => [
+                ['order' => [['column' => 0, 'dir' => 'asc']], 'columns' => [0 => ['name' => null]]],
+                $error,
+            ],
+            'edit column with name' => [
+                ['order' => [['column' => 4, 'dir' => 'asc']], 'columns' => [4 => ['name' => 'name']]],
+                $error,
+            ],
+            'nonexistent column' => [
+                ['order' => [['column' => 5, 'dir' => 'asc']]],
+                $error,
+            ],
+        ];
     }
 
     public function test_authorize(): void
@@ -75,32 +103,6 @@ class SupplierIndexRequestTest extends TestCase
         $validator->passes();
 
         $this->assertSame($expectedErrors, $validator->errors()->toArray());
-    }
-
-    /** @return array<string, array<mixed>> */
-    public static function sortingCases(): array
-    {
-        $error = ['order.0.column' => ['A coluna selecionada não permite ordenação.']];
-
-        return [
-            'sortable column' => [
-                ['order' => [['column' => 0, 'dir' => 'asc']]],
-                [],
-            ],
-            'without sorting' => [[], []],
-            'column without name' => [
-                ['order' => [['column' => 0, 'dir' => 'asc']], 'columns' => [0 => ['name' => null]]],
-                $error,
-            ],
-            'edit column with name' => [
-                ['order' => [['column' => 4, 'dir' => 'asc']], 'columns' => [4 => ['name' => 'name']]],
-                $error,
-            ],
-            'nonexistent column' => [
-                ['order' => [['column' => 5, 'dir' => 'asc']]],
-                $error,
-            ],
-        ];
     }
 
     public function test_after_skips_existing_errors(): void

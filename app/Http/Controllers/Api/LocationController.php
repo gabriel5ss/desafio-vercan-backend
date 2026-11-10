@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -7,7 +9,7 @@ use App\Models\City;
 use App\Models\State;
 use Illuminate\Http\JsonResponse;
 
-class LocationController extends Controller
+final class LocationController extends Controller
 {
     public function states(): JsonResponse
     {

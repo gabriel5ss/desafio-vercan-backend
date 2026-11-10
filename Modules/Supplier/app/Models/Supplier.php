@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Models;
 
 use App\Models\City;
@@ -28,12 +30,13 @@ use OwenIt\Auditing\Contracts\Auditable;
  * @property-read Company|Individual|null $supplierable
  */
 #[UseFactory(SupplierFactory::class)]
-class Supplier extends Model implements Auditable, CanPresent
+final class Supplier extends Model implements Auditable, CanPresent
 {
     use AuditableTrait;
 
     /** @use HasFactory<SupplierFactory> */
     use HasFactory;
+
     use UsesPresenters;
 
     protected $presenters = [
@@ -44,6 +47,42 @@ class Supplier extends Model implements Auditable, CanPresent
         'state_id', 'city_id', 'active', 'postal_code', 'street', 'number', 'complement',
         'district', 'reference', 'state', 'city', 'condominium', 'condominium_address', 'condominium_number', 'observation',
     ];
+
+    /** @return array{states: Collection<int, State>, cities: Collection<int, City>} */
+    public static function formOptions(): array
+    {
+        $states = State::orderBy('name')->get(['id', 'code', 'name']);
+        $cities = City::orderBy('name')->get(['id', 'state_id', 'name']);
+
+        return [
+            'states' => $states,
+            'cities' => $cities,
+        ];
+    }
+
+    /** @return MorphTo<Model, $this> */
+    public function supplierable(): MorphTo
+    {
+        return $this->morphTo('supplierable', 'supplierable_type', 'supplierable_id');
+    }
+
+    /** @return BelongsTo<State, $this> */
+    public function stateInfo(): BelongsTo
+    {
+        return $this->belongsTo(State::class, 'state_id');
+    }
+
+    /** @return BelongsTo<City, $this> */
+    public function cityInfo(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    /** @return HasMany<Contact, $this> */
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class);
+    }
 
     protected function casts(): array
     {
@@ -94,30 +133,6 @@ class Supplier extends Model implements Auditable, CanPresent
         );
     }
 
-    /** @return MorphTo<Model, $this> */
-    public function supplierable(): MorphTo
-    {
-        return $this->morphTo('supplierable', 'supplierable_type', 'supplierable_id');
-    }
-
-    /** @return BelongsTo<State, $this> */
-    public function stateInfo(): BelongsTo
-    {
-        return $this->belongsTo(State::class, 'state_id');
-    }
-
-    /** @return BelongsTo<City, $this> */
-    public function cityInfo(): BelongsTo
-    {
-        return $this->belongsTo(City::class, 'city_id');
-    }
-
-    /** @return HasMany<Contact, $this> */
-    public function contacts(): HasMany
-    {
-        return $this->hasMany(Contact::class);
-    }
-
     /** @param Builder<Supplier> $query */
     #[Scope]
     protected function applySorting(Builder $query, ?string $sortBy, string $direction): void
@@ -151,7 +166,7 @@ class Supplier extends Model implements Auditable, CanPresent
     #[Scope]
     protected function searchTerm(Builder $query, ?string $search): void
     {
-        $search = trim($search ?? '');
+        $search = mb_trim($search ?? '');
 
         if ($search === '') {
             return;
@@ -176,17 +191,5 @@ class Supplier extends Model implements Auditable, CanPresent
                 },
             );
         });
-    }
-
-    /** @return array{states: Collection<int, State>, cities: Collection<int, City>} */
-    public static function formOptions(): array
-    {
-        $states = State::orderBy('name')->get(['id', 'code', 'name']);
-        $cities = City::orderBy('name')->get(['id', 'state_id', 'name']);
-
-        return [
-            'states' => $states,
-            'cities' => $cities,
-        ];
     }
 }

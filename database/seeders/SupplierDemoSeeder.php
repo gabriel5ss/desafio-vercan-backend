@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\City;
@@ -9,7 +11,7 @@ use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 use RuntimeException;
 
-class SupplierDemoSeeder extends Seeder
+final class SupplierDemoSeeder extends Seeder
 {
     public function run(): void
     {
@@ -98,7 +100,7 @@ class SupplierDemoSeeder extends Seeder
 
         $contact = $supplier->contacts()->firstOrCreate(['is_primary' => true]);
         $contact->methods()->updateOrCreate(
-            ['kind' => 'phone', 'value' => '1998765'.str_pad((string) $index, 4, '0', STR_PAD_LEFT)],
+            ['kind' => 'phone', 'value' => '1998765'.mb_str_pad((string) $index, 4, '0', STR_PAD_LEFT)],
             ['label' => 'Celular'],
         );
         $contact->methods()->updateOrCreate(
@@ -109,7 +111,7 @@ class SupplierDemoSeeder extends Seeder
 
     private function cpf(int $index): string
     {
-        $base = str_pad((string) (123456789 + $index * 137), 9, '0', STR_PAD_LEFT);
+        $base = mb_str_pad((string) (123456789 + $index * 137), 9, '0', STR_PAD_LEFT);
         $firstDigit = $this->checkDigit($base, range(10, 2));
         $secondDigit = $this->checkDigit($base.$firstDigit, range(11, 2));
 
@@ -118,7 +120,7 @@ class SupplierDemoSeeder extends Seeder
 
     private function cnpj(int $index): string
     {
-        $base = '12345678'.str_pad((string) $index, 4, '0', STR_PAD_LEFT);
+        $base = '12345678'.mb_str_pad((string) $index, 4, '0', STR_PAD_LEFT);
         $firstDigit = $this->checkDigit($base, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
         $secondDigit = $this->checkDigit($base.$firstDigit, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
 

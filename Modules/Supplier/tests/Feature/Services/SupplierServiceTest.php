@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Tests\Feature\Services;
 
 use App\Models\City;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use Modules\Supplier\Models\Company;
@@ -13,9 +16,11 @@ use Modules\Supplier\Models\Supplier;
 use Modules\Supplier\Services\SupplierService;
 use Override;
 use PHPUnit\Framework\Attributes\TestWith;
+use RuntimeException;
 use Tests\TestCase;
+use TypeError;
 
-class SupplierServiceTest extends TestCase
+final class SupplierServiceTest extends TestCase
 {
     private SupplierService $service;
 
@@ -170,6 +175,55 @@ class SupplierServiceTest extends TestCase
         $this->assertModelMissing($contact);
         $this->assertModelMissing($method);
         $this->assertModelExists($otherSupplier);
+    }
+
+    public function test_save_rolls_back_when_contact_creation_fails(): void
+    {
+        $supplier = Supplier::factory()->create();
+        $person = $supplier->supplierable;
+        $originalName = $person->name;
+        $originalCityId = $supplier->city_id;
+        $contact = Contact::factory()->primary()->create(['supplier_id' => $supplier->id]);
+        $method = ContactMethod::factory()->create(['contact_id' => $contact->id]);
+        $data = $this->validData();
+        $data['name'] = 'Nome que deve ser revertido';
+        $data['primary_contact']['phones'] = [null];
+        $transactionLevel = DB::transactionLevel();
+
+        $this->assertThrows(fn () => $this->service->save($data, $supplier), TypeError::class);
+
+        $this->assertSame($transactionLevel, DB::transactionLevel());
+        $this->assertSame($originalName, $person->fresh()->name);
+        $this->assertSame($originalCityId, $supplier->fresh()->city_id);
+        $this->assertModelExists($contact);
+        $this->assertModelExists($method);
+        $this->assertDatabaseCount('contacts', 1);
+    }
+
+    public function test_delete_rolls_back_when_person_deletion_fails(): void
+    {
+        $supplier = Supplier::factory()->create();
+        $person = $supplier->supplierable;
+        $contact = Contact::factory()->primary()->create(['supplier_id' => $supplier->id]);
+        $method = ContactMethod::factory()->create(['contact_id' => $contact->id]);
+        $transactionLevel = DB::transactionLevel();
+        $dispatcher = Individual::getEventDispatcher();
+        Individual::setEventDispatcher(clone $dispatcher);
+        Individual::deleting(function (): void {
+            throw new RuntimeException('Falha ao excluir a pessoa.');
+        });
+
+        try {
+            $this->assertThrows(fn () => $this->service->delete($supplier), RuntimeException::class);
+        } finally {
+            Individual::setEventDispatcher($dispatcher);
+        }
+
+        $this->assertSame($transactionLevel, DB::transactionLevel());
+        $this->assertModelExists($supplier);
+        $this->assertModelExists($person);
+        $this->assertModelExists($contact);
+        $this->assertModelExists($method);
     }
 
     private function fakeCompanyLookup(): void

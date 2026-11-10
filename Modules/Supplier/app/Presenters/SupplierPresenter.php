@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Presenters;
 
 use Coderflex\LaravelPresenter\Presenter;
@@ -8,7 +10,7 @@ use Modules\Supplier\Models\ContactMethod;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
-class SupplierPresenter extends Presenter
+final class SupplierPresenter extends Presenter
 {
     /**
      * Prepara os dados do fornecedor para preencher o formulário.

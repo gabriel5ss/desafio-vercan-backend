@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Http\Requests;
 
 use Closure;
@@ -7,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
-class SupplierIndexRequest extends FormRequest
+final class SupplierIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {

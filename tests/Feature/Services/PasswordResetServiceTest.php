@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Services;
 
 use App\Mail\PasswordResetCode;
@@ -12,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
-class PasswordResetServiceTest extends TestCase
+final class PasswordResetServiceTest extends TestCase
 {
     private PasswordResetService $service;
 

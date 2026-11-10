@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use OwenIt\Auditing\Models\Audit;
 use OwenIt\Auditing\Resolvers\IpAddressResolver;
 use OwenIt\Auditing\Resolvers\UrlResolver;

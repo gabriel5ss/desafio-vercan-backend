@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -7,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Individual;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.

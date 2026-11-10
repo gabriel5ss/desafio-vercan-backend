@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 
-class PasswordResetCode extends Mailable
+final class PasswordResetCode extends Mailable
 {
     public function __construct(public readonly string $code) {}
 

@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Services;
 
-use App\Models\City;
 use App\Services\ReceitaWsService;
-use Illuminate\Support\Arr;
+use Facades\Modules\Supplier\Services\Actions\SupplierAction;
+use Facades\Modules\Supplier\Services\Actions\SupplierContactAction;
+use Facades\Modules\Supplier\Services\Actions\SupplierDeleteAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Modules\Supplier\Models\Company;
-use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
+use Throwable;
 
-class SupplierService
+final class SupplierService
 {
     public function __construct(private readonly ReceitaWsService $receitaWs) {}
 
@@ -26,76 +28,41 @@ class SupplierService
             }
         }
 
-        return DB::transaction(function () use ($data, $supplier, $registry): Supplier {
-            $supplier ??= new Supplier;
-            $currentPerson = $supplier->exists ? $supplier->supplierable : null;
+        DB::beginTransaction();
 
-            if ($data['type'] === 'individual') {
-                $person = $currentPerson instanceof Individual ? $currentPerson : new Individual;
-                $person->fill(Arr::only($data, ['name', 'nickname', 'cpf', 'rg']))->save();
-            } else {
-                $person = $currentPerson instanceof Company ? $currentPerson : new Company;
-                $person->fill(Arr::only($data, ['corporate_name', 'trade_name', 'cnpj', 'state_registration_indicator', 'state_registration', 'municipal_registration', 'tax_regime']))->save();
-            }
-
-            if ($person instanceof Company) {
-                $person->cnpj_status = $registry['situacao'] ?? null;
-                $person->save();
-            }
-
-            $city = City::with('state')->findOrFail($data['city_id']);
-            $supplier->fill(Arr::only($data, [
-                'state_id', 'city_id', 'active', 'postal_code', 'street', 'number', 'complement', 'district', 'reference', 'state', 'city',
-                'condominium', 'condominium_address', 'condominium_number',
-            ]));
-            $supplier->state = $city->state->code;
-            $supplier->city = $city->name;
-            $supplier->observation = isset($data['observation']) ? json_encode($data['observation'], JSON_UNESCAPED_UNICODE) : null;
-            $supplier->supplierable()->associate($person);
-            $supplier->save();
+        try {
+            $supplier = SupplierAction::handle($data, $supplier, $registry);
 
             $supplier->contacts()->delete();
-            $this->saveContact($supplier, $data['primary_contact'], true);
+            SupplierContactAction::handle($supplier, $data['primary_contact'], true);
             foreach ($data['additional_contacts'] ?? [] as $contact) {
-                $this->saveContact($supplier, $contact, false);
+                SupplierContactAction::handle($supplier, $contact, false);
             }
 
-            if ($currentPerson && $currentPerson::class !== $person::class) {
-                $currentPerson->delete();
-            }
+            $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
 
-            return $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
-        });
+            DB::commit();
+
+            return $supplier;
+        } catch (Throwable $exception) {
+            DB::rollBack();
+
+            throw $exception;
+        }
     }
 
     public function delete(Supplier $supplier): void
     {
-        DB::transaction(function () use ($supplier): void {
-            $person = $supplier->supplierable;
-            $supplier->delete();
-            $person?->delete();
-        });
-    }
+        DB::beginTransaction();
 
-    /** @param array<string, mixed> $data */
-    private function saveContact(Supplier $supplier, array $data, bool $is_primary): void
-    {
-        $contact = $supplier->contacts()->create([
-            'is_primary' => $is_primary,
-            'name' => $is_primary ? null : $data['name'],
-            'company' => $is_primary ? null : ($data['company'] ?? null),
-            'position' => $is_primary ? null : ($data['position'] ?? null),
-        ]);
+        try {
+            SupplierDeleteAction::handle($supplier);
 
-        foreach (['phones' => 'phone', 'emails' => 'email'] as $field => $kind) {
-            $contact->methods()->createMany(array_map(
-                fn (array $method): array => [
-                    'kind' => $kind,
-                    'value' => $method['value'],
-                    'label' => $method['label'] ?? null,
-                ],
-                $data[$field] ?? [],
-            ));
+            DB::commit();
+        } catch (Throwable $exception) {
+            DB::rollBack();
+
+            throw $exception;
         }
     }
 }

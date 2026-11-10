@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Supplier\Models\Individual;
 
 /** @extends Factory<Individual> */
-class IndividualFactory extends Factory
+final class IndividualFactory extends Factory
 {
     protected $model = Individual::class;
 

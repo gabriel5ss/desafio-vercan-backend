@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Models;
 
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -8,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Supplier\Database\Factories\ContactMethodFactory;
 
 #[UseFactory(ContactMethodFactory::class)]
-class ContactMethod extends Model
+final class ContactMethod extends Model
 {
     /** @use HasFactory<ContactMethodFactory> */
     use HasFactory;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Database\Factories;
 
 use App\Models\City;
@@ -10,7 +12,7 @@ use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
 /** @extends Factory<Supplier> */
-class SupplierFactory extends Factory
+final class SupplierFactory extends Factory
 {
     protected $model = Supplier::class;
 

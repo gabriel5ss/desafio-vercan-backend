@@ -1,9 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Rules;
 
-class CpfValidatorRule
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+final class CpfValidatorRule implements ValidationRule
 {
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if (is_string($value) && $value !== '' && ! $this->isValid($value)) {
+            $fail('O CPF informado é inválido.');
+        }
+    }
+
     public function isValid(string $cpf): bool
     {
         if (! preg_match('/^[0-9]{11}$/', $cpf)) {

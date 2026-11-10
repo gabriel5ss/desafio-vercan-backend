@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use Illuminate\Http\Client\ConnectionException;
@@ -7,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
-class ReceitaWsService
+final class ReceitaWsService
 {
     /** @return array<string, mixed>|null */
     public function lookup(string $cnpj): ?array

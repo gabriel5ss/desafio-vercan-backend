@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Providers;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
-class SupplierServiceProvider extends ModuleServiceProvider
+final class SupplierServiceProvider extends ModuleServiceProvider
 {
     /**
      * The name of the module.

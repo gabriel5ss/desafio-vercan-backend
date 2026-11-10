@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Models;
 
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -11,7 +13,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
 #[UseFactory(ContactFactory::class)]
-class Contact extends Model implements Auditable
+final class Contact extends Model implements Auditable
 {
     use AuditableTrait;
 
@@ -20,14 +22,14 @@ class Contact extends Model implements Auditable
 
     protected $fillable = ['is_primary', 'name', 'company', 'position'];
 
-    protected function casts(): array
-    {
-        return ['is_primary' => 'boolean'];
-    }
-
     /** @return HasMany<ContactMethod, $this> */
     public function methods(): HasMany
     {
         return $this->hasMany(ContactMethod::class);
+    }
+
+    protected function casts(): array
+    {
+        return ['is_primary' => 'boolean'];
     }
 }

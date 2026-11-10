@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Supplier\Tests\Unit\Http\Requests;
 
-use Closure;
+use App\Services\Rules\CnpjValidatorRule;
+use App\Services\Rules\CpfValidatorRule;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Modules\Supplier\Http\Requests\SupplierRequest;
 use Override;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 
-class SupplierRequestTest extends TestCase
+final class SupplierRequestTest extends TestCase
 {
     protected SupplierRequest $request;
 
@@ -26,24 +30,24 @@ class SupplierRequestTest extends TestCase
         $this->assertTrue($this->request->authorize());
     }
 
-    #[TestWith([true, 'required'], 'condominium requires address and number')]
-    #[TestWith([false, ''], 'without condominium fields are optional')]
-    public function test_rules(bool $condominium, string $required): void
+    #[TestWith([true], 'condominium requires address and number')]
+    #[TestWith([false], 'without condominium fields are optional')]
+    public function test_rules(bool $condominium): void
     {
         $this->request->merge(['condominium' => $condominium, 'state_id' => 35]);
         $rules = [
-            'type' => ['required', 'in:"individual","company"'],
+            'type' => ['required', 'in:individual,company'],
             'name' => ['required_if:type,individual', 'nullable', 'string', 'max:255'],
-            'cpf' => ['required_if:type,individual', 'nullable', 'digits:11', 'unique:individuals,cpf,NULL,id', Closure::class],
+            'cpf' => ['required_if:type,individual', 'nullable', 'digits:11', 'unique:individuals,cpf,NULL,id', CpfValidatorRule::class],
             'nickname' => ['nullable', 'string', 'max:120'],
             'rg' => ['required_if:type,individual', 'nullable', 'string', 'max:30'],
             'corporate_name' => ['required_if:type,company', 'nullable', 'string', 'max:255'],
             'trade_name' => ['required_if:type,company', 'nullable', 'string', 'max:255'],
-            'cnpj' => ['required_if:type,company', 'nullable', 'digits:14', 'unique:companies,cnpj,NULL,id', Closure::class],
-            'state_registration_indicator' => ['required_if:type,company', 'nullable', 'in:"contribuinte","isento","nao_contribuinte"'],
+            'cnpj' => ['required_if:type,company', 'nullable', 'digits:14', 'unique:companies,cnpj,NULL,id', CnpjValidatorRule::class],
+            'state_registration_indicator' => ['required_if:type,company', 'nullable', 'in:contribuinte,isento,nao_contribuinte'],
             'state_registration' => ['nullable', 'string', 'max:30'],
             'municipal_registration' => ['nullable', 'string', 'max:30'],
-            'tax_regime' => ['required_if:type,company', 'nullable', 'in:"withheld_by_recipient","payable_by_provider"'],
+            'tax_regime' => ['required_if:type,company', 'nullable', 'in:withheld_by_recipient,payable_by_provider'],
             'active' => ['required', 'boolean'],
             'postal_code' => ['required', 'digits:8'],
             'street' => ['required', 'string', 'max:255'],
@@ -52,10 +56,10 @@ class SupplierRequestTest extends TestCase
             'district' => ['required', 'string', 'max:120'],
             'reference' => ['nullable', 'string', 'max:255'],
             'state_id' => ['required', 'integer', 'exists:states,id'],
-            'city_id' => ['required', 'integer', 'exists:cities,id,state_id,"35"'],
+            'city_id' => ['required', 'integer', 'exists:cities,id,state_id,35'],
             'condominium' => ['required', 'boolean'],
-            'condominium_address' => [$required, 'nullable', 'string', 'max:255'],
-            'condominium_number' => [$required, 'nullable', 'string', 'max:30'],
+            'condominium_address' => ['required_if:condominium,true', 'nullable', 'string', 'max:255'],
+            'condominium_number' => ['required_if:condominium,true', 'nullable', 'string', 'max:30'],
             'observation' => ['nullable', 'array'],
             'observation.content' => ['nullable', 'string'],
             'primary_contact' => ['required', 'array'],
@@ -80,7 +84,7 @@ class SupplierRequestTest extends TestCase
         $actualRules = $this->request->rules();
         array_walk_recursive($actualRules, function (mixed &$rule): void {
             $rule = match (true) {
-                $rule instanceof Closure => Closure::class,
+                $rule instanceof ValidationRule => $rule::class,
                 $rule instanceof Stringable => (string) $rule,
                 default => $rule,
             };

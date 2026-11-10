@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Models;
 
 use App\Models\City;
 use App\Models\State;
 use Tests\TestCase;
 
-class CityTest extends TestCase
+final class CityTest extends TestCase
 {
     public function test_state(): void
     {

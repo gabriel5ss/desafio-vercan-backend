@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +11,7 @@ use App\Models\User;
 use App\Services\PasswordResetService;
 use Illuminate\Http\RedirectResponse;
 
-class PasswordResetController extends Controller
+final class PasswordResetController extends Controller
 {
     public function sendCode(PasswordResetRequest $request, PasswordResetService $service): RedirectResponse
     {
