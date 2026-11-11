@@ -8,6 +8,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'Modules/Audit/resources/assets/js/app.js',
                 'resources/css/ubold.css',
                 'resources/js/ubold.js',
                 'Modules/Supplier/resources/assets/js/app.js',

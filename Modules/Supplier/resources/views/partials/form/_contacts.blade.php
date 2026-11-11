@@ -1,3 +1,5 @@
+<input type="hidden" name="primary_contact[id]" value="{{ $formData['primary_contact']['id'] ?? '' }}">
+
 <div class="row g-3">
     <section class="col-md-6" aria-labelledby="phones-heading">
         <div
@@ -9,6 +11,7 @@
             @foreach ($formData['primary_contact']['phones'] as $index => $phone)
                 <x-form.input-groups.phone
                     :index="$index"
+                    :method-id="$phone['id'] ?? null"
                     :value-field="$phone['value_field']"
                     :label-field="$phone['label_field']"
                     :value="$phone['value'] ?? ''"
@@ -48,6 +51,7 @@
             @foreach ($formData['primary_contact']['emails'] as $index => $email)
                 <x-form.input-groups.email
                     :index="$index"
+                    :method-id="$email['id'] ?? null"
                     :value-field="$email['value_field']"
                     :label-field="$email['label_field']"
                     :value="$email['value'] ?? ''"

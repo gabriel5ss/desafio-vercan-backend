@@ -1,5 +1,6 @@
 @props([
     'index' => '__INDEX__',
+    'methodId' => null,
     'valueField',
     'labelField',
     'value' => '',
@@ -7,6 +8,7 @@
 ])
 
 <div class="mb-3" data-contact-row>
+    <input type="hidden" name="primary_contact[emails][{{ $index }}][id]" value="{{ $methodId }}">
     <div class="row gx-2 align-items-end flex-nowrap">
         <div class="col-md-5">
             <label class="form-label" for="email-{{ $index }}">

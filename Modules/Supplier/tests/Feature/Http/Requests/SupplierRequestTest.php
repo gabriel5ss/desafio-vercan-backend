@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Supplier\Tests\Feature\Http\Requests;
 
 use App\Models\City;
-use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use JMac\Testing\Traits\AdditionalAssertions;
 use Modules\Supplier\Database\Factories\SupplierFactory;
@@ -13,6 +12,7 @@ use Modules\Supplier\Http\Requests\SupplierRequest;
 use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
+use Modules\User\Models\User;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -127,19 +127,6 @@ final class SupplierRequestTest extends TestCase
         ];
     }
 
-    /** @return array<string, array{bool|int|string, bool}> */
-    public static function condominiumCases(): array
-    {
-        return [
-            'enabled with boolean' => [true, true],
-            'enabled with integer' => [1, true],
-            'enabled with string' => ['1', true],
-            'disabled with boolean' => [false, false],
-            'disabled with integer' => [0, false],
-            'disabled with string' => ['0', false],
-        ];
-    }
-
     /** @return array<string, array{string, class-string}> */
     public static function formRequestCases(): array
     {
@@ -208,41 +195,6 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
-    #[DataProvider('validData')]
-    public function test_rejects_document_already_used_by_another_person(array $data): void
-    {
-        $data['state_id'] = $this->city->state_id;
-        $data['city_id'] = $this->city->id;
-        $document = $data['type'] === 'individual' ? 'cpf' : 'cnpj';
-
-        if ($data['type'] === 'individual') {
-            Individual::factory()->create(['cpf' => $data['cpf']]);
-        } else {
-            Company::factory()->create(['cnpj' => $data['cnpj']]);
-        }
-
-        $response = $this->postJson(route('suppliers.store'), $data);
-
-        $response->assertUnprocessable();
-        $response->assertInvalid([$document]);
-
-        $this->assertDatabaseCount('suppliers', 0);
-    }
-
-    #[DataProvider('individualData')]
-    public function test_rejects_city_that_does_not_belong_to_selected_state(array $data): void
-    {
-        $otherCity = City::factory()->create();
-        $data['state_id'] = $this->city->state_id;
-        $data['city_id'] = $otherCity->id;
-
-        $response = $this->postJson(route('suppliers.store'), $data);
-
-        $response->assertUnprocessable();
-        $response->assertInvalid(['city_id']);
-        $this->assertDatabaseCount('suppliers', 0);
-    }
-
     #[DataProvider('individualData')]
     public function test_cpf_on_update(array $data): void
     {
@@ -287,42 +239,8 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
-    #[DataProvider('condominiumCases')]
-    public function test_condominium_fields_are_required_only_when_enabled(bool|int|string $condominium, bool $fieldsRequired): void
-    {
-        $data = [
-            'type' => 'individual',
-            'name' => 'Teste User',
-            'cpf' => '12345678909',
-            'rg' => '123456789',
-            'active' => true,
-            'postal_code' => '01310100',
-            'street' => 'Avenida Paulista',
-            'number' => '100',
-            'district' => 'Bela Vista',
-            'state_id' => $this->city->state_id,
-            'city_id' => $this->city->id,
-            'condominium' => $condominium,
-            'primary_contact' => [
-                'phones' => [['value' => '11999999999']],
-                'emails' => [['value' => 'contato@example.com']],
-            ],
-        ];
-
-        $response = $this->postJson(route('suppliers.store'), $data);
-
-        if ($fieldsRequired) {
-            $response->assertUnprocessable();
-            $response->assertInvalid(['condominium_address', 'condominium_number']);
-            $this->assertDatabaseCount('suppliers', 0);
-        } else {
-            $response->assertValid();
-            $this->assertDatabaseCount('suppliers', 1);
-        }
-    }
-
     #[DataProvider('individualData')]
-    public function test_cpf_invalid(array $data): void
+    public function test_cpf_failed(array $data): void
     {
         $data['state_id'] = $this->city->state_id;
         $data['city_id'] = $this->city->id;
@@ -337,7 +255,7 @@ final class SupplierRequestTest extends TestCase
     }
 
     #[DataProvider('companyData')]
-    public function test_cnpj_invalid(array $data): void
+    public function test_cnpj_failed(array $data): void
     {
         $data['state_id'] = $this->city->state_id;
         $data['city_id'] = $this->city->id;

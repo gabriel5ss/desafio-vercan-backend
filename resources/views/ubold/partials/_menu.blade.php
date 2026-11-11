@@ -38,6 +38,20 @@
                 </a>
             </li>
 
+            <li class="menu-item">
+                <a href="{{ route('user.index') }}" class="menu-link">
+                    <span class="menu-icon"><i data-feather="user"></i></span>
+                    <span class="menu-text"> Usuários </span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('audits.index') }}" class="menu-link">
+                    <span class="menu-icon"><i data-feather="activity"></i></span>
+                    <span class="menu-text"> Logs de auditoria </span>
+                </a>
+            </li>
+
             <li class="menu-title">Logout</li>
 
             <li class="menu-item">

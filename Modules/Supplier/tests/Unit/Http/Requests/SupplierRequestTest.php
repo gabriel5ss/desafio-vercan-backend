@@ -9,7 +9,7 @@ use App\Services\Rules\CpfValidatorRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Modules\Supplier\Http\Requests\SupplierRequest;
 use Override;
-use PHPUnit\Framework\Attributes\TestWith;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 
@@ -25,13 +25,18 @@ final class SupplierRequestTest extends TestCase
         $this->request = new SupplierRequest;
     }
 
+    public static function rulesProvider(): iterable
+    {
+        yield 'condominium' => [true];
+        yield 'without condominium' => [false];
+    }
+
     public function test_authorize(): void
     {
         $this->assertTrue($this->request->authorize());
     }
 
-    #[TestWith([true], 'condominium requires address and number')]
-    #[TestWith([false], 'without condominium fields are optional')]
+    #[DataProvider('rulesProvider')]
     public function test_rules(bool $condominium): void
     {
         $this->request->merge(['condominium' => $condominium, 'state_id' => 35]);
@@ -63,20 +68,26 @@ final class SupplierRequestTest extends TestCase
             'observation' => ['nullable', 'array'],
             'observation.content' => ['nullable', 'string'],
             'primary_contact' => ['required', 'array'],
+            'primary_contact.id' => ['nullable', 'integer', 'min:1'],
             'primary_contact.phones' => ['required', 'array', 'min:1'],
+            'primary_contact.phones.*.id' => ['nullable', 'integer', 'min:1'],
             'primary_contact.phones.*.value' => ['required', 'regex:/^\d{10,11}$/'],
             'primary_contact.phones.*.label' => ['nullable', 'string', 'max:30'],
             'primary_contact.emails' => ['required', 'array', 'min:1'],
+            'primary_contact.emails.*.id' => ['nullable', 'integer', 'min:1'],
             'primary_contact.emails.*.value' => ['required', 'email:rfc', 'max:255'],
             'primary_contact.emails.*.label' => ['nullable', 'string', 'max:30'],
             'additional_contacts' => ['sometimes', 'array'],
+            'additional_contacts.*.id' => ['nullable', 'integer', 'min:1'],
             'additional_contacts.*.name' => ['required', 'string', 'max:255'],
             'additional_contacts.*.company' => ['nullable', 'string', 'max:255'],
             'additional_contacts.*.position' => ['nullable', 'string', 'max:120'],
             'additional_contacts.*.phones' => ['sometimes', 'array'],
+            'additional_contacts.*.phones.*.id' => ['nullable', 'integer', 'min:1'],
             'additional_contacts.*.phones.*.value' => ['required', 'regex:/^\d{10,11}$/'],
             'additional_contacts.*.phones.*.label' => ['required', 'string', 'max:30'],
             'additional_contacts.*.emails' => ['sometimes', 'array'],
+            'additional_contacts.*.emails.*.id' => ['nullable', 'integer', 'min:1'],
             'additional_contacts.*.emails.*.value' => ['required', 'email:rfc', 'max:255'],
             'additional_contacts.*.emails.*.label' => ['required', 'string', 'max:30'],
         ];

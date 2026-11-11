@@ -40,7 +40,7 @@ final class ReceitaWsServiceTest extends TestCase
             && $request->url() === config('services.receitaws_url').'04252011000110');
     }
 
-    public function test_throws_service_unavailable_for_http_error(): void
+    public function test_service_unavailable(): void
     {
         Http::fake([
             config('services.receitaws_url').'04252011000110' => Http::response([], 500),
@@ -52,7 +52,7 @@ final class ReceitaWsServiceTest extends TestCase
         $this->service->lookup('04252011000110');
     }
 
-    public function test_throws_service_unavailable_for_connection_failure(): void
+    public function test_unavailable_connection(): void
     {
         Http::fake([
             config('services.receitaws_url').'04252011000110' => Http::failedConnection(),
@@ -64,7 +64,7 @@ final class ReceitaWsServiceTest extends TestCase
         $this->service->lookup('04252011000110');
     }
 
-    public function test_throws_service_unavailable_for_invalid_json_response(): void
+    public function test_invalid_json_response(): void
     {
         Http::fake([
             config('services.receitaws_url').'04252011000110' => Http::response('invalid json'),

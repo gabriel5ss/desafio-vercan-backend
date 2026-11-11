@@ -35,10 +35,13 @@ final class SupplierAction
         }
 
         $city = City::with('state')->findOrFail($data['city_id']);
+
         $supplier->fill(Arr::only($data, [
-            'state_id', 'city_id', 'active', 'postal_code', 'street', 'number', 'complement', 'district', 'reference', 'state', 'city',
+            'state_id', 'city_id', 'active', 'postal_code', 'street',
+            'number', 'complement', 'district', 'reference', 'state', 'city',
             'condominium', 'condominium_address', 'condominium_number',
         ]));
+
         $supplier->state = $city->state->code;
         $supplier->city = $city->name;
         $supplier->observation = isset($data['observation']) ? json_encode($data['observation'], JSON_UNESCAPED_UNICODE) : null;

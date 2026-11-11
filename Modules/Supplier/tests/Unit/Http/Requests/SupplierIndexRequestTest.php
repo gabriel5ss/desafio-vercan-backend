@@ -105,14 +105,13 @@ final class SupplierIndexRequestTest extends TestCase
         $this->assertSame($expectedErrors, $validator->errors()->toArray());
     }
 
-    public function test_after_skips_existing_errors(): void
+    public function test_after_failed(): void
     {
         $validator = new Validator(new Translator(new ArrayLoader, 'en'), [], []);
         $validator->errors()->add('draw', 'Invalid draw.');
 
-        foreach ($this->request->after() as $callback) {
-            $callback($validator);
-        }
+        $callback = $this->request->after()[0];
+        $callback($validator);
 
         $this->assertSame(['draw' => ['Invalid draw.']], $validator->errors()->toArray());
     }

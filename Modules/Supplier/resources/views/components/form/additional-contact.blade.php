@@ -21,6 +21,8 @@
         </div>
     </div>
 
+    <input type="hidden" name="additional_contacts[{{ $index }}][id]" value="{{ $contact['id'] ?? '' }}">
+
     <div id="additional-contact-{{ $index }}" class="collapse show">
         <div class="p-3">
             <div class="row g-3 mb-3">

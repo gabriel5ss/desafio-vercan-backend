@@ -7,9 +7,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Models\User;
 use App\Services\PasswordResetService;
 use Illuminate\Http\RedirectResponse;
+use Modules\User\Models\User;
 
 final class PasswordResetController extends Controller
 {

@@ -28,16 +28,19 @@ final class SupplierService
             }
         }
 
+        $supplier ??= new Supplier;
+
         DB::beginTransaction();
 
         try {
             $supplier = SupplierAction::handle($data, $supplier, $registry);
 
-            $supplier->contacts()->delete();
             SupplierContactAction::handle($supplier, $data['primary_contact'], true);
+            $contactIds = [];
             foreach ($data['additional_contacts'] ?? [] as $contact) {
-                SupplierContactAction::handle($supplier, $contact, false);
+                $contactIds[] = SupplierContactAction::handle($supplier, $contact, false)->id;
             }
+            $supplier->contacts()->where('is_primary', false)->whereNotIn('id', $contactIds)->delete();
 
             $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
 

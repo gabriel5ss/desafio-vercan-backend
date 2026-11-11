@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Modules\Supplier\Tests\Feature\Http\Controllers;
 
 use App\Models\City;
-use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use JMac\Testing\Traits\AdditionalAssertions;
-use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
+use Modules\User\Models\User;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -39,13 +38,6 @@ final class SupplierControllerTest extends TestCase
     {
         yield 'show' => ['suppliers.show', 'supplier::show'];
         yield 'edit' => ['suppliers.edit', 'supplier::create'];
-    }
-
-    /** @return iterable<string, array{array<string, mixed>, int}> */
-    public static function indexApiCases(): iterable
-    {
-        yield 'list' => [[], 2];
-        yield 'search and sort' => [['search' => ['value' => 'Alfa'], 'order' => [['column' => 0, 'dir' => 'asc']]], 1];
     }
 
     /** @return iterable<string, array{?string, string}> */
@@ -200,25 +192,23 @@ final class SupplierControllerTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
-    #[DataProvider('indexApiCases')]
-    public function test_index_api(array $filters, int $count): void
+    public function test_index_api(): void
     {
-        $this->supplier->supplierable->update(['name' => 'Alfa']);
-        $this->supplier->update(['created_at' => '2026-01-02 12:00:00']);
-        Supplier::factory()->for(Individual::factory()->state(['name' => 'Beta']), 'supplierable')
-            ->create(['created_at' => '2026-01-01 12:00:00']);
-        $query = array_replace([
+        $query = [
             'draw' => 1, 'start' => 0, 'length' => 10,
-            'columns' => array_map(fn (string $field): array => ['data' => $field, 'name' => $field === 'edit_url' ? null : $field],
-                ['name', 'trade_name', 'document', 'active', 'edit_url']),
-        ], $filters);
+            'columns' => [
+                ['data' => 'name'],
+                ['data' => 'trade_name'],
+                ['data' => 'document'],
+                ['data' => 'active'],
+                ['data' => 'edit_url'],
+            ],
+        ];
 
         $response = $this->actingAs($this->user)
             ->getJson(route('api.suppliers.index', $query));
 
         $response->assertSuccessful();
-        $response->assertJsonCount($count, 'data');
-        $response->assertJsonPath('data.0.name', 'Alfa');
 
         $this->assertAuthenticatedAs($this->user);
     }

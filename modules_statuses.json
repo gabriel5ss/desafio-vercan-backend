@@ -1,3 +1,5 @@
 {
-    "Supplier": true
+    "Supplier": true,
+    "User": true,
+    "Audit": true
 }

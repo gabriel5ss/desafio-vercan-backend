@@ -1,4 +1,5 @@
 <div class="mb-3" data-contact-row>
+    <input type="hidden" name="additional_contacts[{{ $index }}][{{ $kind }}][{{ $methodIndex }}][id]" value="{{ $method['id'] ?? '' }}">
     <div class="row gx-2 gy-2 align-items-start">
         <div class="col-12 col-sm">
             <label class="form-label" for="{{ $methodForm['input_id'] }}">{{ $label }} <span class="text-danger">*</span></label>

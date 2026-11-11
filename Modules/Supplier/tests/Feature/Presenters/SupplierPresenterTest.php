@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\Supplier\Tests\Feature\Presenters;
 
+use Closure;
 use Modules\Supplier\Database\Factories\SupplierFactory;
 use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Contact;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 final class SupplierPresenterTest extends TestCase
@@ -24,6 +26,13 @@ final class SupplierPresenterTest extends TestCase
         $this->supplier = Supplier::factory();
 
         $this->app['request']->setLaravelSession($this->app['session.store']);
+        $this->withViewErrors([]);
+    }
+
+    public static function contactsProvider(): iterable
+    {
+        yield 'saved' => [static fn (array $input): array => []];
+        yield 'old input' => [static fn (array $input): array => ['_old_input' => $input]];
     }
 
     public function test_default_data(): void
@@ -74,7 +83,8 @@ final class SupplierPresenterTest extends TestCase
         $this->assertNull($data['cpf']);
     }
 
-    public function test_contacts(): void
+    #[DataProvider('contactsProvider')]
+    public function test_contacts(Closure $sessionData): void
     {
         $supplier = $this->supplier->create();
         $primaryContact = Contact::factory()
@@ -92,8 +102,28 @@ final class SupplierPresenterTest extends TestCase
             ['kind' => 'email', 'value' => 'user@example.com'],
         ]);
 
-        $data = $supplier->present()->formData();
+        $primaryPhone = $primaryContact->methods()->where('kind', 'phone')->firstOrFail();
+        $primaryEmail = $primaryContact->methods()->where('kind', 'email')->firstOrFail();
+        $additionalPhone = $additionalContact->methods()->where('kind', 'phone')->firstOrFail();
+        $additionalEmail = $additionalContact->methods()->where('kind', 'email')->firstOrFail();
+        $this->withSession($sessionData([
+            'primary_contact' => ['id' => $primaryContact->id, 'phones' => [$primaryPhone->only(['id', 'value', 'label'])], 'emails' => [$primaryEmail->only(['id', 'value', 'label'])]],
+            'additional_contacts' => [[...$additionalContact->only(['id', 'name']), 'phones' => [$additionalPhone->only(['id', 'value', 'label'])], 'emails' => [$additionalEmail->only(['id', 'value', 'label'])]]],
+        ]));
 
+        $data = $supplier->present()->formData();
+        $primaryView = $this->view('supplier::partials.form._contacts', ['formData' => $data]);
+        $additionalView = $this->view('supplier::partials.form._additional_contacts', ['formData' => $data]);
+
+        $primaryView->assertSee('name="primary_contact[id]" value="'.$primaryContact->id.'"', false);
+        $primaryView->assertSee('name="primary_contact[phones][0][id]" value="'.$primaryPhone->id.'"', false);
+        $primaryView->assertSee('name="primary_contact[emails][0][id]" value="'.$primaryEmail->id.'"', false);
+        $primaryView->assertSee('name="primary_contact[phones][__INDEX__][id]" value=""', false);
+        $primaryView->assertSee('name="primary_contact[emails][__INDEX__][id]" value=""', false);
+        $additionalView->assertSee('name="additional_contacts[0][id]" value="'.$additionalContact->id.'"', false);
+        $additionalView->assertSee('name="additional_contacts[0][phones][0][id]" value="'.$additionalPhone->id.'"', false);
+        $additionalView->assertSee('name="additional_contacts[0][emails][0][id]" value="'.$additionalEmail->id.'"', false);
+        $additionalView->assertSee('name="additional_contacts[__CONTACT_INDEX__][id]" value=""', false);
         $this->assertSame('11999999999', $data['primary_contact']['phones'][0]['value']);
         $this->assertSame('principal@example.com', $data['primary_contact']['emails'][0]['value']);
         $this->assertCount(1, $data['additional_contacts']);

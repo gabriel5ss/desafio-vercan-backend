@@ -31,7 +31,7 @@ final class SupplierPresenter extends Presenter
         $primaryContact = $supplier?->contacts
             ->firstWhere('is_primary', true);
 
-        $contactValues = [];
+        $contactValues = ['id' => old('primary_contact.id', $primaryContact?->id)];
         $contactTemplates = [];
         $nextContactIndexes = [];
         $emptyRow = [['value' => '', 'label' => '']];
@@ -40,6 +40,7 @@ final class SupplierPresenter extends Presenter
             $savedValues = $primaryContact?->methods
                 ->where('kind', $kind)
                 ->map(fn (ContactMethod $method): array => [
+                    'id' => $method->id,
                     'value' => $method->value,
                     'label' => $method->label,
                 ])
@@ -67,9 +68,9 @@ final class SupplierPresenter extends Presenter
         $savedAdditionalContacts = $supplier !== null
             ? $supplier->contacts->where('is_primary', false)->values()->map(function (Contact $contact): array {
                 return [
-                    ...$contact->only(['name', 'company', 'position']),
-                    'phones' => $contact->methods->where('kind', 'phone')->values()->map->only(['value', 'label'])->all(),
-                    'emails' => $contact->methods->where('kind', 'email')->values()->map->only(['value', 'label'])->all(),
+                    ...$contact->only(['id', 'name', 'company', 'position']),
+                    'phones' => $contact->methods->where('kind', 'phone')->values()->map->only(['id', 'value', 'label'])->all(),
+                    'emails' => $contact->methods->where('kind', 'email')->values()->map->only(['id', 'value', 'label'])->all(),
                 ];
             })->all()
             : [];
