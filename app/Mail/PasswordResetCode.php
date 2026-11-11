@@ -10,7 +10,9 @@ use Illuminate\Mail\Mailables\Envelope;
 
 final class PasswordResetCode extends Mailable
 {
-    public function __construct(public readonly string $code) {}
+    public function __construct(public readonly string $code)
+    {
+    }
 
     /**
      * Get the message envelope.

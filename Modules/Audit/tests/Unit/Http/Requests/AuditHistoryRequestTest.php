@@ -16,7 +16,7 @@ final class AuditHistoryRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->request = new AuditHistoryRequest;
+        $this->request = new AuditHistoryRequest();
     }
 
     /** Confere a paginação limitada e a busca desativada da tabela. */

@@ -29,10 +29,18 @@ final class SupplierPresenterTest extends TestCase
         $this->withViewErrors([]);
     }
 
+    /** @return iterable<string, array{Closure(array<string, mixed>): array<string, mixed>}> */
     public static function contactsProvider(): iterable
     {
         yield 'saved' => [static fn (array $input): array => []];
         yield 'old input' => [static fn (array $input): array => ['_old_input' => $input]];
+    }
+
+    /** @return iterable<string, array{string|array<string>}> */
+    public static function invalidTypes(): iterable
+    {
+        yield 'valor desconhecido' => ['invalido'];
+        yield 'array' => [['individual']];
     }
 
     public function test_default_data(): void
@@ -48,6 +56,19 @@ final class SupplierPresenterTest extends TestCase
         $this->assertSame([], $data['observation']);
         $this->assertSame(['phones' => 1, 'emails' => 1], $data['next_contact_indexes']);
         $this->assertSame(0, $data['next_additional_contact_index']);
+    }
+
+    /** @param string|array<string> $type */
+    #[DataProvider('invalidTypes')]
+    public function test_form_data_failed(string|array $type): void
+    {
+        $supplier = $this->supplier->for(Individual::factory()->state(['name' => 'Alfa']), 'supplierable')->create();
+        $this->withSession(['_old_input' => ['type' => $type]]);
+
+        $data = $supplier->present()->formData();
+
+        $this->assertSame('individual', $data['type']);
+        $this->assertSame('Alfa', $data['name']);
     }
 
     public function test_individual_data(): void

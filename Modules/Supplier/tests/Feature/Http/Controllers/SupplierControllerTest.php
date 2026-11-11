@@ -108,6 +108,7 @@ final class SupplierControllerTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('validData')]
     public function test_store(array $data): void
     {
@@ -140,6 +141,7 @@ final class SupplierControllerTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('validData')]
     public function test_update(array $data): void
     {
@@ -158,6 +160,7 @@ final class SupplierControllerTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('validData')]
     public function test_update_failed(array $data): void
     {

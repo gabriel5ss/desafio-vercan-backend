@@ -20,7 +20,7 @@ final class SupplierFactory extends Factory
     public function definition(): array
     {
         return [
-            'supplierable_type' => (new Individual)->getMorphClass(),
+            'supplierable_type' => (new Individual())->getMorphClass(),
             'supplierable_id' => Individual::factory(),
             'state_id' => State::factory(),
             'city_id' => fn (array $attributes): int => City::factory()->create(['state_id' => $attributes['state_id']])->id,
@@ -38,7 +38,7 @@ final class SupplierFactory extends Factory
     public function company(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'supplierable_type' => (new Company)->getMorphClass(),
+            'supplierable_type' => (new Company())->getMorphClass(),
             'supplierable_id' => Company::factory(),
         ]);
     }

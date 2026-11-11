@@ -15,11 +15,14 @@ final class SetAuditContext
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Context::add('log_id', (string) Str::uuid());
+        Context::add([
+            'log_id' => (string) Str::uuid(),
+            'root_type' => null,
+        ]);
 
         $route = $request->route();
 
@@ -33,6 +36,5 @@ final class SetAuditContext
         }
 
         return $next($request);
-
     }
 }

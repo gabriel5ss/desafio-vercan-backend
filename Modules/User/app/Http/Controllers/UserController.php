@@ -34,19 +34,20 @@ final class UserController extends Controller
      */
     public function create(): View
     {
-        return view('user::create', ['user' => new User, 'read_only' => false]);
+        return view('user::create', ['user' => new User(), 'read_only' => false]);
     }
 
     /**
      * Salva os dados validados do novo usuário.
      *
-     * @param  UserRequest  $request  Dados validados do formulário.
-     * @param  UserService  $service  Persistência transacional do usuário e da observação.
+     * @param UserRequest $request Dados validados do formulário.
+     * @param UserService $service Persistência transacional do usuário e da observação.
+     *
      * @return RedirectResponse Retorno à listagem.
      */
     public function store(UserRequest $request, UserService $service): RedirectResponse
     {
-        $service->save($request->validated(), new User);
+        $service->save($request->validated(), new User());
 
         return redirect()->route('user.index')->with('status', 'Usuário cadastrado com sucesso.');
     }
@@ -54,7 +55,8 @@ final class UserController extends Controller
     /**
      * Exibe os dados do usuário sem permitir alterações.
      *
-     * @param  User  $user  Usuário consultado.
+     * @param User $user Usuário consultado.
+     *
      * @return View Tela de consulta.
      */
     public function show(User $user): View
@@ -67,7 +69,8 @@ final class UserController extends Controller
     /**
      * Exibe o formulário de edição.
      *
-     * @param  User  $user  Usuário editado.
+     * @param User $user Usuário editado.
+     *
      * @return View Tela de edição.
      */
     public function edit(User $user): View
@@ -80,9 +83,10 @@ final class UserController extends Controller
     /**
      * Atualiza o usuário, mantendo a senha atual quando o campo estiver vazio.
      *
-     * @param  UserRequest  $request  Dados validados do formulário.
-     * @param  User  $user  Usuário editado.
-     * @param  UserService  $service  Persistência transacional do usuário e da observação.
+     * @param UserRequest $request Dados validados do formulário.
+     * @param User $user Usuário editado.
+     * @param UserService $service Persistência transacional do usuário e da observação.
+     *
      * @return RedirectResponse Retorno à listagem.
      */
     public function update(UserRequest $request, User $user, UserService $service): RedirectResponse
@@ -95,12 +99,13 @@ final class UserController extends Controller
     /**
      * Remove o usuário, impedindo a exclusão da própria conta em uso.
      *
-     * @param  Request  $request  Requisição autenticada.
-     * @param  User  $user  Usuário removido.
-     * @param  UserService  $service  Persistência transacional do usuário e da observação.
-     * @return RedirectResponse Retorno à listagem.
+     * @param Request $request Requisição autenticada.
+     * @param User $user Usuário removido.
+     * @param UserService $service Persistência transacional do usuário e da observação.
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException Quando houver tentativa de excluir a própria conta.
+     *
+     * @return RedirectResponse Retorno à listagem.
      */
     public function destroy(Request $request, User $user, UserService $service): RedirectResponse
     {

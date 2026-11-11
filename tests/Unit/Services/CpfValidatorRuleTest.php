@@ -24,7 +24,7 @@ final class CpfValidatorRuleTest extends TestCase
     #[DataProvider('cpfValidationCases')]
     public function test_returns_expected_validation_result(string $cpf, bool $expected): void
     {
-        $validator = new CpfValidatorRule;
+        $validator = new CpfValidatorRule();
 
         $isValid = $validator->isValid($cpf);
 

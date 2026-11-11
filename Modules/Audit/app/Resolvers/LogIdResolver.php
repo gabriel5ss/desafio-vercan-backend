@@ -14,7 +14,8 @@ final class LogIdResolver implements Resolver
     /**
      * Retorna o identificador da operação para a coluna da auditoria.
      *
-     * @param  Auditable  $auditable  Entidade auditada.
+     * @param Auditable $auditable Entidade auditada.
+     *
      * @return ?string Valor da coluna.
      */
     public static function resolve(?Auditable $auditable = null): ?string

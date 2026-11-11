@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('suppliers', function (Blueprint $table) {
+        Schema::table('suppliers', function (Blueprint $table): void {
             Schema::table('suppliers', function (Blueprint $table): void {
                 if (! Schema::hasColumn('suppliers', 'state_id')) {
                     $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
@@ -30,7 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('suppliers', function (Blueprint $table) {
+        Schema::table('suppliers', function (Blueprint $table): void {
             Schema::table('suppliers', function (Blueprint $table): void {
                 if (Schema::hasColumn('suppliers', 'city_id')) {
                     $table->dropConstrainedForeignId('city_id');

@@ -14,7 +14,8 @@ final class RootIdResolver implements Resolver
     /**
      * Retorna o identificador da entidade raiz para a coluna da auditoria.
      *
-     * @param  Auditable  $auditable  Entidade auditada.
+     * @param Auditable $auditable Entidade auditada.
+     *
      * @return int|string|null Valor da coluna.
      */
     public static function resolve(Auditable $auditable): int|string|null

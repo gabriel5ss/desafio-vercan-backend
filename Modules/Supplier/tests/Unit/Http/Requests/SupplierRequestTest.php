@@ -22,9 +22,10 @@ final class SupplierRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->request = new SupplierRequest;
+        $this->request = new SupplierRequest();
     }
 
+    /** @return iterable<string, array{bool}> */
     public static function rulesProvider(): iterable
     {
         yield 'condominium' => [true];

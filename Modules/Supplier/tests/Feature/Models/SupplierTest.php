@@ -104,8 +104,8 @@ final class SupplierTest extends TestCase
     }
 
     /**
-     * @param  class-string<Individual|Company>|null  $personClass
-     * @param  array<string, string|null>  $data
+     * @param class-string<Individual|Company>|null $personClass
+     * @param array<string, string|null> $data
      */
     #[DataProvider('nameCases')]
     public function test_get_name_attribute(?string $personClass, array $data, ?string $expected): void
@@ -118,8 +118,8 @@ final class SupplierTest extends TestCase
     }
 
     /**
-     * @param  class-string<Individual|Company>|null  $personClass
-     * @param  array<string, string|null>  $data
+     * @param class-string<Individual|Company>|null $personClass
+     * @param array<string, string|null> $data
      */
     #[DataProvider('tradeNameCases')]
     public function test_get_trade_name_attribute(?string $personClass, array $data, string $expected): void
@@ -132,8 +132,8 @@ final class SupplierTest extends TestCase
     }
 
     /**
-     * @param  class-string<Individual|Company>|null  $personClass
-     * @param  array<string, string|null>  $data
+     * @param class-string<Individual|Company>|null $personClass
+     * @param array<string, string|null> $data
      */
     #[DataProvider('documentCases')]
     public function test_get_document_attribute(?string $personClass, array $data, ?string $expected): void

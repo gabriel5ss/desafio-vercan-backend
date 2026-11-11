@@ -143,6 +143,7 @@ final class SupplierRequestTest extends TestCase
         $this->assertRouteUsesFormRequest($route, $request);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('validData')]
     public function test_prepare_for_validation(array $data): void
     {
@@ -172,7 +173,8 @@ final class SupplierRequestTest extends TestCase
                     'phones' => [['value' => '(21) 98888-7777', 'label' => 'Celular']],
                     'emails' => [['value' => ' user@exemplo.com ', 'label' => 'Pessoal']],
                 ]],
-            ]);
+            ],
+        );
 
         $data[$type === 'individual' ? 'cnpj' : 'cpf'] = '123456789012345';
 
@@ -195,6 +197,7 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('individualData')]
     public function test_cpf_on_update(array $data): void
     {
@@ -215,6 +218,7 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('companyData')]
     public function test_cnpj_on_update(array $data): void
     {
@@ -239,6 +243,7 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('individualData')]
     public function test_cpf_failed(array $data): void
     {
@@ -254,6 +259,7 @@ final class SupplierRequestTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
     #[DataProvider('companyData')]
     public function test_cnpj_failed(array $data): void
     {

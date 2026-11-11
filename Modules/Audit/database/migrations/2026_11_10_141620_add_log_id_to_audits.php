@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('audits', function (Blueprint $table) {
+        Schema::table('audits', function (Blueprint $table): void {
             $table->uuid('log_id')
                 ->nullable()
                 ->after('event')
@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('audits', function (Blueprint $table) {
+        Schema::table('audits', function (Blueprint $table): void {
             $table->dropColumn('log_id');
         });
     }

@@ -24,7 +24,7 @@ final class CnpjValidatorRuleTest extends TestCase
     #[DataProvider('cnpjValidationCases')]
     public function test_returns_expected_validation_result(string $cnpj, bool $expected): void
     {
-        $validator = new CnpjValidatorRule;
+        $validator = new CnpjValidatorRule();
 
         $isValid = $validator->isValid($cnpj);
 

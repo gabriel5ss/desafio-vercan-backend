@@ -3,6 +3,10 @@ includes:
 
 parameters:
     level: 6
+    databaseMigrationsPath:
+        - database/migrations
+        - Modules/*/database/migrations
     paths:
         - app
+        - Modules
         - database

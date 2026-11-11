@@ -15,7 +15,9 @@ use Throwable;
 
 final class SupplierService
 {
-    public function __construct(private readonly ReceitaWsService $receitaWs) {}
+    public function __construct(private readonly ReceitaWsService $receitaWs)
+    {
+    }
 
     /** @param array<string, mixed> $data */
     public function save(array $data, ?Supplier $supplier = null): Supplier
@@ -28,11 +30,17 @@ final class SupplierService
             }
         }
 
-        $supplier ??= new Supplier;
+        $supplier ??= new Supplier();
 
         DB::beginTransaction();
 
         try {
+            // adicionado para evitar situações onde
+            // dois usuarios modifiquem o mesmo registro
+            if ($supplier->exists) {
+                $supplier->refreshForUpdate();
+            }
+
             $supplier = SupplierAction::handle($data, $supplier, $registry);
 
             SupplierContactAction::handle($supplier, $data['primary_contact'], true);

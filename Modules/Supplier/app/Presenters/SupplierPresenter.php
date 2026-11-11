@@ -31,7 +31,7 @@ final class SupplierPresenter extends Presenter
         $primaryContact = $supplier?->contacts
             ->firstWhere('is_primary', true);
 
-        $contactValues = ['id' => old('primary_contact.id', $primaryContact?->id)];
+        $contactValues = ['id' => session()->getOldInput('primary_contact.id', $primaryContact?->id)];
         $contactTemplates = [];
         $nextContactIndexes = [];
         $emptyRow = [['value' => '', 'label' => '']];
@@ -96,8 +96,10 @@ final class SupplierPresenter extends Presenter
             'cnpj_status',
         ];
 
-        $type = $person instanceof Individual ? 'individual' : 'company';
-        $type = old('type', $type);
+        $default_type = $person instanceof Individual ? 'individual' : 'company';
+        $old_type = old('type', $default_type);
+        // Retoma o tipo salvo quando a validação devolve um valor inválido ao formulário.
+        $type = in_array($old_type, ['individual', 'company'], true) ? $old_type : $default_type;
 
         $fields = match ($type) {
             'individual' => $individualFields,
@@ -119,13 +121,14 @@ final class SupplierPresenter extends Presenter
             'additional_contact_template' => self::additionalContactFormData([], '__CONTACT_INDEX__'),
             'next_additional_contact_index' => $nextAdditionalContactIndex,
             'next_contact_indexes' => $nextContactIndexes,
-            'active' => $supplier?->active ?? 1,
-            'observation' => json_decode($supplier?->observation ?? '{}', true) ?? [],
+            'active' => $supplier->active ?? 1,
+            'observation' => json_decode($supplier->observation ?? '{}', true) ?? [],
         ];
     }
 
     /**
-     * @param  array<string, mixed>  $contact
+     * @param array<string, mixed> $contact
+     *
      * @return array<string, mixed>
      */
     private function additionalContactFormData(array $contact, int|string $index): array

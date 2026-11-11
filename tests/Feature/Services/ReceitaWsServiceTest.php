@@ -23,7 +23,7 @@ final class ReceitaWsServiceTest extends TestCase
             'cache.default' => 'array',
         ]);
 
-        $this->service = new ReceitaWsService;
+        $this->service = new ReceitaWsService();
     }
 
     public function test_lookup(): void

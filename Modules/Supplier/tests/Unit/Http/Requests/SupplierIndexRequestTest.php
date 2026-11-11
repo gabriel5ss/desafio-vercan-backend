@@ -22,7 +22,7 @@ final class SupplierIndexRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->request = new SupplierIndexRequest;
+        $this->request = new SupplierIndexRequest();
     }
 
     /** @return array<string, array<mixed>> */
@@ -78,8 +78,8 @@ final class SupplierIndexRequestTest extends TestCase
     }
 
     /**
-     * @param  array<string, mixed>  $changes
-     * @param  array<string, list<string>>  $expectedErrors
+     * @param array<string, mixed> $changes
+     * @param array<string, list<string>> $expectedErrors
      */
     #[DataProvider('sortingCases')]
     public function test_after(array $changes, array $expectedErrors): void
@@ -97,7 +97,7 @@ final class SupplierIndexRequestTest extends TestCase
             ],
         ], $changes);
 
-        $validator = new Validator(new Translator(new ArrayLoader, 'en'), $data, $this->request->rules());
+        $validator = new Validator(new Translator(new ArrayLoader(), 'en'), $data, $this->request->rules());
         $validator->after($this->request->after());
 
         $validator->passes();
@@ -107,7 +107,7 @@ final class SupplierIndexRequestTest extends TestCase
 
     public function test_after_failed(): void
     {
-        $validator = new Validator(new Translator(new ArrayLoader, 'en'), [], []);
+        $validator = new Validator(new Translator(new ArrayLoader(), 'en'), [], []);
         $validator->errors()->add('draw', 'Invalid draw.');
 
         $callback = $this->request->after()[0];

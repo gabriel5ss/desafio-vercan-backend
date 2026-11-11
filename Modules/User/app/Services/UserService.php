@@ -15,8 +15,9 @@ final class UserService
     /**
      * Persiste os dados do usuário e a observação opcional em transação.
      *
-     * @param  array<string, mixed>  $data  Dados validados do formulário.
-     * @param  User  $user  Usuário novo ou existente.
+     * @param array<string, mixed> $data Dados validados do formulário.
+     * @param User $user Usuário novo ou existente.
+     *
      * @return User Usuário salvo.
      */
     public function save(array $data, User $user): User
@@ -46,7 +47,7 @@ final class UserService
     /**
      * Exclui os registros individualmente para auditar também a observação.
      *
-     * @param  User  $user  Usuário removido.
+     * @param User $user Usuário removido.
      */
     public function delete(User $user): void
     {
@@ -67,8 +68,8 @@ final class UserService
     /**
      * Mantém uma observação por usuário; campo ausente preserva o registro e vazio o remove.
      *
-     * @param  array<string, mixed>  $data  Dados validados do formulário.
-     * @param  User  $user  Usuário proprietário da observação.
+     * @param array<string, mixed> $data Dados validados do formulário.
+     * @param User $user Usuário proprietário da observação.
      */
     private function saveObservation(array $data, User $user): void
     {

@@ -39,7 +39,7 @@ final class SupplierServiceProvider extends ModuleServiceProvider
     /**
      * Define module schedules.
      *
-     * @param  $schedule
+     * @param $schedule
      */
     // protected function configureSchedules(Schedule $schedule): void
     // {

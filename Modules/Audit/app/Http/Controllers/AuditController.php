@@ -25,9 +25,10 @@ final class AuditController extends Controller
     /**
      * Consulta o histórico pelos identificadores da raiz informados na URL.
      *
-     * @param  string  $root_type  Tipo gravado em root_type, sem resolver ou instanciar classes.
-     * @param  int  $root_id  Identificador gravado em root_id.
-     * @param  AuditHistoryService  $service  Consulta paginada compartilhada.
+     * @param string $root_type Tipo gravado em root_type, sem resolver ou instanciar classes.
+     * @param int $root_id Identificador gravado em root_id.
+     * @param AuditHistoryService $service Consulta paginada compartilhada.
+     *
      * @return JsonResponse Operações completas no protocolo do DataTables.
      */
     public function history(string $root_type, int $root_id, AuditHistoryService $service): JsonResponse
@@ -55,7 +56,7 @@ final class AuditController extends Controller
         $query = Audit::query()
             ->leftJoin('users', function (JoinClause $join): void {
                 $join->on('users.id', '=', 'audits.user_id')
-                    ->where('audits.user_type', (new User)->getMorphClass());
+                    ->where('audits.user_type', (new User())->getMorphClass());
             })
             ->select([
                 'audits.id',

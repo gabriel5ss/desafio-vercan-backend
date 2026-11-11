@@ -17,7 +17,7 @@ final class LoginRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->loginFormRequest = new LoginRequest;
+        $this->loginFormRequest = new LoginRequest();
     }
 
     /**

@@ -18,7 +18,7 @@ final class UserRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->request = new UserRequest;
+        $this->request = new UserRequest();
     }
 
     /** Confere as regras obrigatórias do cadastro. */

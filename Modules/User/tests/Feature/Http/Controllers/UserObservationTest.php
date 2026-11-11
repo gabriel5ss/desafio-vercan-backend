@@ -54,7 +54,7 @@ final class UserObservationTest extends TestCase
         $this->assertTrue($target_user->observation->user->is($target_user));
         $this->assertCount(2, $audits);
         $this->assertCount(1, $audits->pluck('log_id')->unique());
-        $this->assertNotNull($audits->first()->log_id);
+        $this->assertNotNull($audits->first()->getAttribute('log_id'));
         $this->assertAuthenticatedAs($this->user);
     }
 
@@ -72,8 +72,8 @@ final class UserObservationTest extends TestCase
         $this->assertDatabaseHas('user_observations', ['id' => $observation->id, 'content' => 'Omega']);
         $this->assertCount(2, $audits);
         $this->assertCount(1, $audits->pluck('log_id')->unique());
-        $this->assertSame($this->target_user->id, (int) $audit->root_id);
-        $this->assertSame($this->target_user->getMorphClass(), $audit->root_type);
+        $this->assertSame($this->target_user->id, (int) $audit->getAttribute('root_id'));
+        $this->assertSame($this->target_user->getMorphClass(), $audit->getAttribute('root_type'));
         $this->assertSame('Alfa', $audit->old_values['content']);
         $this->assertSame('Omega', $audit->new_values['content']);
         $this->assertAuthenticatedAs($this->user);

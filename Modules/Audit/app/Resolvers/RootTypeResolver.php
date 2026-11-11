@@ -14,7 +14,8 @@ final class RootTypeResolver implements Resolver
     /**
      * Retorna o tipo da entidade raiz para a coluna da auditoria.
      *
-     * @param  Auditable  $auditable  Entidade auditada.
+     * @param Auditable $auditable Entidade auditada.
+     *
      * @return ?string Valor da coluna.
      */
     public static function resolve(Auditable $auditable): ?string

@@ -39,7 +39,8 @@ final class Supplier extends Model implements Auditable, CanPresent
 
     use UsesPresenters;
 
-    protected $presenters = [
+    /** @var array<string, class-string<SupplierPresenter>> */
+    protected array $presenters = [
         'default' => SupplierPresenter::class,
     ];
 

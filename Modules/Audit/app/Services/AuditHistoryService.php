@@ -15,8 +15,9 @@ final class AuditHistoryService
     /**
      * Pagina operações completas e inclui os detalhes dos grupos da página atual.
      *
-     * @param  string  $root_type  Tipo da raiz gravado nos logs.
-     * @param  int  $root_id  Identificador da raiz gravado nos logs.
+     * @param string $root_type Tipo da raiz gravado nos logs.
+     * @param int $root_id Identificador da raiz gravado nos logs.
+     *
      * @return JsonResponse Resposta no protocolo do DataTables.
      */
     public function table(string $root_type, int $root_id): JsonResponse
@@ -30,10 +31,12 @@ final class AuditHistoryService
         $table = DataTables::eloquent((clone $history)
             ->select('log_id')
             ->selectRaw('MAX(created_at) as created_at')
+            ->selectRaw('MAX(id) as last_audit_id')
             ->groupBy('log_id'))
-            ->filter(static function (): void {})
+            ->filter(static function (): void {
+            })
             ->order(static function (Builder $query): void {
-                $query->orderByDesc('created_at')->orderByDesc('log_id');
+                $query->orderByDesc('created_at')->orderByDesc('last_audit_id');
             });
 
         $groups = $table->prepareQuery()->results();
@@ -59,7 +62,7 @@ final class AuditHistoryService
     /**
      * Formata uma alteração para o histórico.
      *
-     * @return array{event: string, auditable_type: string, changes: array{type: string, id: int|string, old_values: array, new_values: array}}
+     * @return array{event: string, auditable_type: string, changes: array{type: string, id: int|string, old_values: array<string, mixed>, new_values: array<string, mixed>}}
      */
     private function formatAudit(Audit $audit): array
     {

@@ -39,7 +39,7 @@ final class AuditServiceProvider extends ModuleServiceProvider
     /**
      * Define module schedules.
      *
-     * @param  $schedule
+     * @param $schedule
      */
     // protected function configureSchedules(Schedule $schedule): void
     // {
@@ -52,7 +52,7 @@ final class AuditServiceProvider extends ModuleServiceProvider
 
         $this->mergeConfigFrom(
             module_path('Audit', 'config/audit.php'),
-            'audit' // chave raiz da configuração do pacote de auditoria
+            'audit', // chave raiz da configuração do pacote de auditoria
         );
     }
 }

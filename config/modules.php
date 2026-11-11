@@ -313,7 +313,7 @@ return [
     'register' => [
         'translations' => true,
         /**
-         * load files on boot or register method
+         * load files on boot or register method.
          */
         'files' => 'register',
     ],

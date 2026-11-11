@@ -58,7 +58,7 @@ final class SupplierController extends Controller
     {
         ['states' => $states, 'cities' => $cities] = Supplier::formOptions();
 
-        $supplier = new Supplier;
+        $supplier = new Supplier();
         $formData = $supplier->present()->formData();
 
         return view('supplier::create', compact('states', 'cities', 'formData'));

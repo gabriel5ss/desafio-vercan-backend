@@ -13,19 +13,19 @@ use Modules\Supplier\Models\Supplier;
 final class SupplierAction
 {
     /**
-     * @param  array<string, mixed>  $data
-     * @param  array<string, mixed>|null  $registry
+     * @param array<string, mixed> $data
+     * @param array<string, mixed>|null $registry
      */
     public function handle(array $data, ?Supplier $supplier = null, ?array $registry = null): Supplier
     {
-        $supplier ??= new Supplier;
+        $supplier ??= new Supplier();
         $currentPerson = $supplier->exists ? $supplier->supplierable : null;
 
         if ($data['type'] === 'individual') {
-            $person = $currentPerson instanceof Individual ? $currentPerson : new Individual;
+            $person = $currentPerson instanceof Individual ? $currentPerson : new Individual();
             $person->fill(Arr::only($data, ['name', 'nickname', 'cpf', 'rg']))->save();
         } else {
-            $person = $currentPerson instanceof Company ? $currentPerson : new Company;
+            $person = $currentPerson instanceof Company ? $currentPerson : new Company();
             $person->fill(Arr::only($data, ['corporate_name', 'trade_name', 'cnpj', 'state_registration_indicator', 'state_registration', 'municipal_registration', 'tax_regime']))->save();
         }
 
