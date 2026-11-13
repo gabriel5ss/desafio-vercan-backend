@@ -9,7 +9,7 @@ use Modules\Supplier\Models\ContactMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-final class ContactTest extends TestCase
+class ContactTest extends TestCase
 {
     /** @return array<string, array{int, bool}> */
     public static function isPrimaryCases(): array

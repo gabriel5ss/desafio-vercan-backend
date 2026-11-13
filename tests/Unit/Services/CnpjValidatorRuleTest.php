@@ -8,7 +8,7 @@ use App\Services\Rules\CnpjValidatorRule;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class CnpjValidatorRuleTest extends TestCase
+class CnpjValidatorRuleTest extends TestCase
 {
     /** @return array<string, array{string, bool}> */
     public static function cnpjValidationCases(): array

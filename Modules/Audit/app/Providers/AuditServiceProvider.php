@@ -7,7 +7,7 @@ namespace Modules\Audit\Providers;
 use Illuminate\Console\Scheduling\Schedule;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
-final class AuditServiceProvider extends ModuleServiceProvider
+class AuditServiceProvider extends ModuleServiceProvider
 {
     /**
      * The name of the module.

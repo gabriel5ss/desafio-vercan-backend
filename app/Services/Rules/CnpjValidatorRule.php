@@ -7,11 +7,11 @@ namespace App\Services\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-final class CnpjValidatorRule implements ValidationRule
+class CnpjValidatorRule implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (is_string($value) && $value !== '' && ! $this->isValid($value)) {
+        if (! $this->isValid($value)) {
             $fail('O CNPJ informado é inválido.');
         }
     }

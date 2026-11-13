@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Modules\User\Models\User;
 
-final class PasswordResetService
+class PasswordResetService
 {
     public function sendCode(User $user): void
     {

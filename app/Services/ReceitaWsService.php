@@ -4,35 +4,39 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Throwable;
 
-final class ReceitaWsService
+class ReceitaWsService
 {
-    /** @return array<string, mixed>|null */
-    public function lookup(string $cnpj): ?array
+    /** @return array<string, mixed> */
+    public function lookup(string $cnpj): array
     {
         $cnpj = preg_replace('/\D/', '', $cnpj) ?? '';
 
+        $cacheKey = "receitaws:{$cnpj}";
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
+
         try {
-            return Cache::remember("receitaws:{$cnpj}", now()->addMinutes(6), function () use ($cnpj): ?array {
-                $response = Http::acceptJson()->connectTimeout(3)->timeout(8)
-                    ->get(config('services.receitaws_url')."{$cnpj}");
+            $response = Http::acceptJson()->connectTimeout(3)->timeout(10)
+                ->get(config('services.receitaws_url')."{$cnpj}")
+                ->throw();
 
-                if (! $response->successful()) {
-                    throw new ServiceUnavailableHttpException(null, 'O serviço de consulta de CNPJ está indisponível.');
-                }
+            $data = $response->json();
+            if (! $response->successful()) {
+                throw new RuntimeException('A consulta de CNPJ não retornou sucesso.');
+            }
 
-                $data = $response->json();
-                if (! is_array($data)) {
-                    throw new ServiceUnavailableHttpException(null, 'O serviço de consulta de CNPJ retornou uma resposta inválida.');
-                }
+            Cache::put($cacheKey, $data, now()->addMinutes(10));
 
-                return ($data['status'] ?? null) === 'OK' ? $data : null;
-            });
-        } catch (ConnectionException) {
+            return $data;
+        } catch (Throwable) {
             throw new ServiceUnavailableHttpException(null, 'O serviço de consulta de CNPJ está indisponível.');
         }
     }

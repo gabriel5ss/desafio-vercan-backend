@@ -13,7 +13,7 @@ use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class SupplierIndexRequestTest extends TestCase
+class SupplierIndexRequestTest extends TestCase
 {
     protected SupplierIndexRequest $request;
 

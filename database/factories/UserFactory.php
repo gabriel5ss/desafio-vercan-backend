@@ -12,7 +12,7 @@ use Modules\User\Models\User;
 /**
  * @extends Factory<User>
  */
-final class UserFactory extends Factory
+class UserFactory extends Factory
 {
     /** @var class-string<User> Model de usuário localizada no módulo. */
     protected $model = User::class;

@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 
-final class PasswordResetCode extends Mailable
+class PasswordResetCode extends Mailable
 {
     public function __construct(public readonly string $code)
     {

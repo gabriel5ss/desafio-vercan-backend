@@ -11,7 +11,7 @@ use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 use RuntimeException;
 
-final class SupplierDemoSeeder extends Seeder
+class SupplierDemoSeeder extends Seeder
 {
     public function run(): void
     {

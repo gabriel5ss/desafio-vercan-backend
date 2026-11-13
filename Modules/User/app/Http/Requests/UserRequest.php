@@ -7,7 +7,7 @@ namespace Modules\User\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /** Valida os dados de cadastro e edição de usuários. */
-final class UserRequest extends FormRequest
+class UserRequest extends FormRequest
 {
     /** Permite o acesso autenticado, seguindo o módulo Supplier. */
     public function authorize(): bool

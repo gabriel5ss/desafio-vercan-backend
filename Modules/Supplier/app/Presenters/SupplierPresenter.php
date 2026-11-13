@@ -10,7 +10,7 @@ use Modules\Supplier\Models\ContactMethod;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
-final class SupplierPresenter extends Presenter
+class SupplierPresenter extends Presenter
 {
     /**
      * Prepara os dados do fornecedor para preencher o formulário.

@@ -13,7 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 
-final class SupplierRequestTest extends TestCase
+class SupplierRequestTest extends TestCase
 {
     protected SupplierRequest $request;
 

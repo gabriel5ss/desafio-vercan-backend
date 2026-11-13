@@ -10,7 +10,7 @@ use Modules\User\Models\User;
 use PHPUnit\Framework\TestCase;
 
 /** Testa as regras de cadastro e edição de usuários. */
-final class UserRequestTest extends TestCase
+class UserRequestTest extends TestCase
 {
     private UserRequest $request;
 

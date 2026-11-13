@@ -9,7 +9,7 @@ use Modules\Supplier\Models\Contact;
 use Modules\Supplier\Models\ContactMethod;
 
 /** @extends Factory<ContactMethod> */
-final class ContactMethodFactory extends Factory
+class ContactMethodFactory extends Factory
 {
     protected $model = ContactMethod::class;
 

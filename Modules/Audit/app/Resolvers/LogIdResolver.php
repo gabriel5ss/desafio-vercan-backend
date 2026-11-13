@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Contracts\Resolver;
 
 /** Resolve o identificador da operação como um valor individual. */
-final class LogIdResolver implements Resolver
+class LogIdResolver implements Resolver
 {
     /**
      * Retorna o identificador da operação para a coluna da auditoria.

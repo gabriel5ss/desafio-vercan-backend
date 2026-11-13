@@ -12,7 +12,7 @@ use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
 /** @extends Factory<Supplier> */
-final class SupplierFactory extends Factory
+class SupplierFactory extends Factory
 {
     protected $model = Supplier::class;
 

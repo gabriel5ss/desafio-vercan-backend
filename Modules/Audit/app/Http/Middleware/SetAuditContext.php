@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
-final class SetAuditContext
+class SetAuditContext
 {
     /**
      * Handle an incoming request.
@@ -19,10 +19,7 @@ final class SetAuditContext
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Context::add([
-            'log_id' => (string) Str::uuid(),
-            'root_type' => null,
-        ]);
+        Context::add('log_id', (string) Str::uuid());
 
         $route = $request->route();
 

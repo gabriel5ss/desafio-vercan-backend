@@ -8,7 +8,7 @@ use Modules\Audit\Http\Requests\AuditHistoryRequest;
 use PHPUnit\Framework\TestCase;
 
 /** Confere os parâmetros aceitos pela tabela de operações de auditoria. */
-final class AuditHistoryRequestTest extends TestCase
+class AuditHistoryRequestTest extends TestCase
 {
     private AuditHistoryRequest $request;
 

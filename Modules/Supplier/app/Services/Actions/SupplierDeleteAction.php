@@ -6,7 +6,7 @@ namespace Modules\Supplier\Services\Actions;
 
 use Modules\Supplier\Models\Supplier;
 
-final class SupplierDeleteAction
+class SupplierDeleteAction
 {
     public function handle(Supplier $supplier): void
     {

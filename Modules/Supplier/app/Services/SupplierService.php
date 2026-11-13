@@ -13,14 +13,14 @@ use Illuminate\Validation\ValidationException;
 use Modules\Supplier\Models\Supplier;
 use Throwable;
 
-final class SupplierService
+class SupplierService
 {
     public function __construct(private readonly ReceitaWsService $receitaWs)
     {
     }
 
     /** @param array<string, mixed> $data */
-    public function save(array $data, ?Supplier $supplier = null): Supplier
+    public function save(array $data, ?Supplier $supplier = null): void
     {
         $registry = null;
         if ($data['type'] === 'company') {
@@ -43,18 +43,9 @@ final class SupplierService
 
             $supplier = SupplierAction::handle($data, $supplier, $registry);
 
-            SupplierContactAction::handle($supplier, $data['primary_contact'], true);
-            $contactIds = [];
-            foreach ($data['additional_contacts'] ?? [] as $contact) {
-                $contactIds[] = SupplierContactAction::handle($supplier, $contact, false)->id;
-            }
-            $supplier->contacts()->where('is_primary', false)->whereNotIn('id', $contactIds)->delete();
-
-            $supplier->load(['supplierable', 'stateInfo', 'cityInfo', 'contacts.methods']);
+            SupplierContactAction::handle($supplier, $data);
 
             DB::commit();
-
-            return $supplier;
         } catch (Throwable $exception) {
             DB::rollBack();
 

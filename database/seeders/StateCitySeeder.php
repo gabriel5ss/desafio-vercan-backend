@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-final class StateCitySeeder extends Seeder
+class StateCitySeeder extends Seeder
 {
     public function run(): void
     {

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Supplier\Models\Individual;
 
 /** @extends Factory<Individual> */
-final class IndividualFactory extends Factory
+class IndividualFactory extends Factory
 {
     protected $model = Individual::class;
 

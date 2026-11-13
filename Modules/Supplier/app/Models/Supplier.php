@@ -30,7 +30,7 @@ use OwenIt\Auditing\Contracts\Auditable;
  * @property-read Company|Individual|null $supplierable
  */
 #[UseFactory(SupplierFactory::class)]
-final class Supplier extends Model implements Auditable, CanPresent
+class Supplier extends Model implements Auditable, CanPresent
 {
     use AuditableTrait;
 

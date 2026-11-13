@@ -9,7 +9,7 @@ use App\Models\State;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<City> */
-final class CityFactory extends Factory
+class CityFactory extends Factory
 {
     /** @return array<string, mixed> */
     public function definition(): array

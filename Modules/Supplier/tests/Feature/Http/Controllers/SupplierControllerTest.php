@@ -7,13 +7,14 @@ namespace Modules\Supplier\Tests\Feature\Http\Controllers;
 use App\Models\City;
 use Illuminate\Support\Facades\Http;
 use JMac\Testing\Traits\AdditionalAssertions;
+use Modules\Supplier\Models\Contact;
 use Modules\Supplier\Models\Supplier;
 use Modules\User\Models\User;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-final class SupplierControllerTest extends TestCase
+class SupplierControllerTest extends TestCase
 {
     use AdditionalAssertions;
 
@@ -182,6 +183,52 @@ final class SupplierControllerTest extends TestCase
         $this->assertAuthenticatedAs($this->user);
     }
 
+    /** @param array<string, mixed> $data */
+    #[DataProvider('validData')]
+    public function test_update_contacts(array $data): void
+    {
+        $primary = Contact::factory()->primary()->create(['supplier_id' => $this->supplier->id]);
+        $contact = Contact::factory()->create(['supplier_id' => $this->supplier->id]);
+        $removed = Contact::factory()->create(['supplier_id' => $this->supplier->id]);
+        $data['state_id'] = $this->supplier->state_id;
+        $data['city_id'] = $this->supplier->city_id;
+        $data['additional_contacts'] = [
+            ['id' => $contact->id, 'name' => 'Alfa'],
+            ['name' => 'Beta', 'emails' => [['value' => 'beta@teste.com', 'label' => 'Comercial']]],
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->put(route('suppliers.update', $this->supplier), $data);
+
+        $response->assertRedirectToRoute('suppliers.index');
+        $response->assertSessionHasNoErrors();
+        $this->assertModelExists($primary);
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id, 'name' => 'Alfa']);
+        $this->assertDatabaseHas('contacts', ['supplier_id' => $this->supplier->id, 'name' => 'Beta']);
+        $this->assertDatabaseHas('contact_methods', ['kind' => 'email', 'value' => 'beta@teste.com']);
+        $this->assertModelMissing($removed);
+        $this->assertAuthenticatedAs($this->user);
+    }
+
+    /** @param array<string, mixed> $data */
+    #[DataProvider('validData')]
+    public function test_update_without_additional_contacts(array $data): void
+    {
+        $primary = Contact::factory()->primary()->create(['supplier_id' => $this->supplier->id]);
+        $contact = Contact::factory()->create(['supplier_id' => $this->supplier->id]);
+        $data['state_id'] = $this->supplier->state_id;
+        $data['city_id'] = $this->supplier->city_id;
+
+        $response = $this->actingAs($this->user)
+            ->put(route('suppliers.update', $this->supplier), $data);
+
+        $response->assertRedirectToRoute('suppliers.index');
+        $response->assertSessionHasNoErrors();
+        $this->assertModelExists($primary);
+        $this->assertModelMissing($contact);
+        $this->assertAuthenticatedAs($this->user);
+    }
+
     public function test_destroy(): void
     {
         $response = $this->actingAs($this->user)
@@ -241,16 +288,14 @@ final class SupplierControllerTest extends TestCase
     public function test_lookup_cnpj_failed(): void
     {
         Http::fake([
-            config('services.receitaws_url').'04252011000110' => Http::response(['status' => 'ERROR']),
+            config('services.receitaws_url').'04252011000110' => Http::response(['status' => 'ERROR'], 503),
         ]);
 
         $response = $this->actingAs($this->user)
             ->getJson(route('api.suppliers.lookup-cnpj', ['cnpj' => '04252011000110']));
 
-        $response->assertUnprocessable();
-        $response->assertInvalid([
-            'cnpj' => 'O CNPJ informado não pôde ser validado. Verifique o número e tente novamente.',
-        ]);
+        $response->assertServiceUnavailable();
+        $response->assertJsonPath('message', 'O serviço de consulta de CNPJ está indisponível.');
 
         Http::assertSentCount(1);
 

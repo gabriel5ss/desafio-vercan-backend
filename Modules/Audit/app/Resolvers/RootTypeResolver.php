@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Contracts\Resolver;
 
 /** Resolve o tipo da entidade raiz como um valor individual. */
-final class RootTypeResolver implements Resolver
+class RootTypeResolver implements Resolver
 {
     /**
      * Retorna o tipo da entidade raiz para a coluna da auditoria.

@@ -12,7 +12,7 @@ use RuntimeException;
 use Tests\TestCase;
 
 /** Verifica a observação relacionada e o agrupamento das alterações na auditoria. */
-final class UserObservationTest extends TestCase
+class UserObservationTest extends TestCase
 {
     private User $user;
 

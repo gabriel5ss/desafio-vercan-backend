@@ -15,7 +15,7 @@ use Modules\User\Models\User;
 use OwenIt\Auditing\Models\Audit;
 use Yajra\DataTables\Facades\DataTables;
 
-final class AuditController extends Controller
+class AuditController extends Controller
 {
     public function index(): View
     {

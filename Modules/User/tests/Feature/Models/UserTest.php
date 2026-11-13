@@ -11,7 +11,7 @@ use OwenIt\Auditing\Models\Audit;
 use Tests\TestCase;
 
 /** Verifica a factory e os vínculos persistidos antes da mudança de namespace. */
-final class UserTest extends TestCase
+class UserTest extends TestCase
 {
     /** Confere a criação direta pela factory existente. */
     public function test_factory(): void

@@ -10,7 +10,7 @@ use Modules\User\Models\User;
 use Throwable;
 
 /** Salva o usuário e sua observação como uma única operação auditável. */
-final class UserService
+class UserService
 {
     /**
      * Persiste os dados do usuário e a observação opcional em transação.

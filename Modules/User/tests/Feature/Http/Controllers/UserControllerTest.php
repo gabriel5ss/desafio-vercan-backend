@@ -9,7 +9,7 @@ use Modules\User\Models\User;
 use Tests\TestCase;
 
 /** Testa as telas e operações do CRUD de usuários. */
-final class UserControllerTest extends TestCase
+class UserControllerTest extends TestCase
 {
     private User $user;
 

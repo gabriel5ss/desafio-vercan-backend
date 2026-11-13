@@ -9,7 +9,7 @@ use App\Models\City;
 use App\Models\State;
 use Illuminate\Http\JsonResponse;
 
-final class LocationController extends Controller
+class LocationController extends Controller
 {
     public function states(): JsonResponse
     {

@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Contracts\Resolver;
 
 /** Resolve o identificador da entidade raiz como um valor individual. */
-final class RootIdResolver implements Resolver
+class RootIdResolver implements Resolver
 {
     /**
      * Retorna o identificador da entidade raiz para a coluna da auditoria.

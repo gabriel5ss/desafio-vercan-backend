@@ -10,7 +10,7 @@ use OwenIt\Auditing\Models\Audit;
 use Yajra\DataTables\Facades\DataTables;
 
 /** Consulta o histórico paginado de qualquer model usada como raiz da auditoria. */
-final class AuditHistoryService
+class AuditHistoryService
 {
     /**
      * Pagina operações completas e inclui os detalhes dos grupos da página atual.

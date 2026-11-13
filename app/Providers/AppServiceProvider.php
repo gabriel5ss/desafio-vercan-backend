@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Individual;
 
-final class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.

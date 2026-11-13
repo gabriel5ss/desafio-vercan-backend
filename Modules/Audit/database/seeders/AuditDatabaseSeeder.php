@@ -6,7 +6,7 @@ namespace Modules\Audit\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-final class AuditDatabaseSeeder extends Seeder
+class AuditDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
-final class SupplierIndexRequest extends FormRequest
+class SupplierIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {

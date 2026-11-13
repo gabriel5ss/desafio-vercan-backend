@@ -8,7 +8,7 @@ use App\Services\Rules\CpfValidatorRule;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class CpfValidatorRuleTest extends TestCase
+class CpfValidatorRuleTest extends TestCase
 {
     /** @return array<string, array{string, bool}> */
     public static function cpfValidationCases(): array

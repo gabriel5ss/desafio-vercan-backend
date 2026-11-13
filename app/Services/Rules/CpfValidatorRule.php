@@ -7,22 +7,18 @@ namespace App\Services\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-final class CpfValidatorRule implements ValidationRule
+class CpfValidatorRule implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (is_string($value) && $value !== '' && ! $this->isValid($value)) {
+        if (! $this->isValid($value)) {
             $fail('O CPF informado é inválido.');
         }
     }
 
     public function isValid(string $cpf): bool
     {
-        if (! preg_match('/^[0-9]{11}$/', $cpf)) {
-            return false;
-        }
-
-        if (preg_match('/^([0-9])\1{10}$/', $cpf)) {
+        if (! $this->formatCheck($cpf)) {
             return false;
         }
 
@@ -33,11 +29,7 @@ final class CpfValidatorRule implements ValidationRule
                 $sum += (int) $cpf[$index] * ($length + 1 - $index);
             }
 
-            $digit = ($sum * 10) % 11;
-
-            if ($digit === 10) {
-                $digit = 0;
-            }
+            $digit = ($sum * 10 % 11) % 10;
 
             if ((int) $cpf[$length] !== $digit) {
                 return false;
@@ -45,5 +37,14 @@ final class CpfValidatorRule implements ValidationRule
         }
 
         return true;
+    }
+
+    public function formatCheck(string $cpf): bool
+    {
+        if (! preg_match('/^[0-9]{11}$/', $cpf)) {
+            return false;
+        }
+
+        return ! preg_match('/^([0-9])\1{10}$/', $cpf);
     }
 }

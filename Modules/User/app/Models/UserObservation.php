@@ -16,7 +16,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 /** Armazena a observação opcional do usuário em um registro auditável próprio. */
 #[Fillable(['content'])]
 #[UseFactory(UserObservationFactory::class)]
-final class UserObservation extends Model implements Auditable
+class UserObservation extends Model implements Auditable
 {
     /** @use HasFactory<UserObservationFactory> */
     use AuditableTrait, HasFactory;

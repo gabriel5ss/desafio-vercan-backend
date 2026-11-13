@@ -8,7 +8,7 @@ use App\Http\Requests\LoginRequest;
 use Override;
 use PHPUnit\Framework\TestCase;
 
-final class LoginRequestTest extends TestCase
+class LoginRequestTest extends TestCase
 {
     protected LoginRequest $loginFormRequest;
 

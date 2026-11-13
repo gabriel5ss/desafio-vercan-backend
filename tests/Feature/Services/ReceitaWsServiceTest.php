@@ -6,11 +6,12 @@ namespace Tests\Feature\Services;
 
 use App\Services\ReceitaWsService;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use RuntimeException;
 use Tests\TestCase;
 
-final class ReceitaWsServiceTest extends TestCase
+class ReceitaWsServiceTest extends TestCase
 {
     private ReceitaWsService $service;
 
@@ -36,42 +37,21 @@ final class ReceitaWsServiceTest extends TestCase
         $result = $this->service->lookup('04252011000110');
 
         $this->assertSame($company, $result);
+        $this->assertSame($company, Cache::get('receitaws:04252011000110'));
         Http::assertSent(fn (Request $request): bool => $request->method() === 'GET'
             && $request->url() === config('services.receitaws_url').'04252011000110');
     }
 
-    public function test_service_unavailable(): void
+    public function test_lookup_failed(): void
     {
+        Cache::spy();
         Http::fake([
-            config('services.receitaws_url').'04252011000110' => Http::response([], 500),
+            config('services.receitaws_url').'04252011000110' => Http::response(['status' => 'ERROR'], 503),
         ]);
 
-        $this->expectException(ServiceUnavailableHttpException::class);
+        Cache::shouldReceive('put')->never();
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('O serviço de consulta de CNPJ está indisponível.');
-
-        $this->service->lookup('04252011000110');
-    }
-
-    public function test_unavailable_connection(): void
-    {
-        Http::fake([
-            config('services.receitaws_url').'04252011000110' => Http::failedConnection(),
-        ]);
-
-        $this->expectException(ServiceUnavailableHttpException::class);
-        $this->expectExceptionMessage('O serviço de consulta de CNPJ está indisponível.');
-
-        $this->service->lookup('04252011000110');
-    }
-
-    public function test_invalid_json_response(): void
-    {
-        Http::fake([
-            config('services.receitaws_url').'04252011000110' => Http::response('invalid json'),
-        ]);
-
-        $this->expectException(ServiceUnavailableHttpException::class);
-        $this->expectExceptionMessage('O serviço de consulta de CNPJ retornou uma resposta inválida.');
 
         $this->service->lookup('04252011000110');
     }

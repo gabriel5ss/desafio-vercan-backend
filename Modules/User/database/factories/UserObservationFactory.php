@@ -13,7 +13,7 @@ use Modules\User\Models\UserObservation;
  *
  * @extends Factory<UserObservation>
  */
-final class UserObservationFactory extends Factory
+class UserObservationFactory extends Factory
 {
     /** @var class-string<UserObservation> Model criada pela factory. */
     protected $model = UserObservation::class;

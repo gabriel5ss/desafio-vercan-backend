@@ -17,7 +17,7 @@ use Modules\Supplier\Models\Supplier;
 use Modules\Supplier\Services\SupplierService;
 use Yajra\DataTables\Facades\DataTables;
 
-final class SupplierController extends Controller
+class SupplierController extends Controller
 {
     public function index(): View
     {
@@ -93,7 +93,7 @@ final class SupplierController extends Controller
 
     public function update(SupplierRequest $request, Supplier $supplier, SupplierService $service): RedirectResponse
     {
-        $supplier = $service->save($request->validated(), $supplier);
+        $service->save($request->validated(), $supplier);
 
         return redirect()->route('suppliers.index')->with('status', 'Fornecedor atualizado com sucesso.');
     }
@@ -114,17 +114,19 @@ final class SupplierController extends Controller
             throw ValidationException::withMessages(['cnpj' => ['O CNPJ informado não pôde ser validado. Verifique o número e tente novamente.']]);
         }
 
-        return response()->json(['data' => [
-            'corporate_name' => $company['nome'] ?? '',
-            'trade_name' => $company['fantasia'] ?? ($company['nome'] ?? ''),
-            'cnpj_status' => $company['situacao'] ?? '',
-            'postal_code' => $company['cep'] ?? '',
-            'street' => $company['logradouro'] ?? '',
-            'number' => $company['numero'] ?? '',
-            'complement' => $company['complemento'] ?? '',
-            'district' => $company['bairro'] ?? '',
-            'city' => $company['municipio'] ?? '',
-            'state' => $company['uf'] ?? '',
-        ]]);
+        return response()->json([
+            'data' => [
+                'corporate_name' => $company['nome'] ?? '',
+                'trade_name' => $company['fantasia'] ?? ($company['nome'] ?? ''),
+                'cnpj_status' => $company['situacao'] ?? '',
+                'postal_code' => $company['cep'] ?? '',
+                'street' => $company['logradouro'] ?? '',
+                'number' => $company['numero'] ?? '',
+                'complement' => $company['complemento'] ?? '',
+                'district' => $company['bairro'] ?? '',
+                'city' => $company['municipio'] ?? '',
+                'state' => $company['uf'] ?? '',
+            ],
+        ]);
     }
 }

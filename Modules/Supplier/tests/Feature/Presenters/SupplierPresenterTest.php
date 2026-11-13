@@ -14,7 +14,7 @@ use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-final class SupplierPresenterTest extends TestCase
+class SupplierPresenterTest extends TestCase
 {
     private SupplierFactory $supplier;
 

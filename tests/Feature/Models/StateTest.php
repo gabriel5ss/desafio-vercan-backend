@@ -8,7 +8,7 @@ use App\Models\City;
 use App\Models\State;
 use Tests\TestCase;
 
-final class StateTest extends TestCase
+class StateTest extends TestCase
 {
     public function test_cities(): void
     {

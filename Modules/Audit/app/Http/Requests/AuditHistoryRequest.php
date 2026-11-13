@@ -7,7 +7,7 @@ namespace Modules\Audit\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /** Valida a paginação do histórico por operações completas. */
-final class AuditHistoryRequest extends FormRequest
+class AuditHistoryRequest extends FormRequest
 {
     /** Mantém o acesso autenticado definido nas rotas dos módulos consumidores. */
     public function authorize(): bool

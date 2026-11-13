@@ -8,7 +8,7 @@ use Modules\User\Models\User;
 use Tests\TestCase;
 
 /** Verifica a autenticação com a model localizada no módulo User. */
-final class AuthControllerTest extends TestCase
+class AuthControllerTest extends TestCase
 {
     private User $user;
 

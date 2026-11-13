@@ -11,7 +11,7 @@ use App\Services\PasswordResetService;
 use Illuminate\Http\RedirectResponse;
 use Modules\User\Models\User;
 
-final class PasswordResetController extends Controller
+class PasswordResetController extends Controller
 {
     public function sendCode(PasswordResetRequest $request, PasswordResetService $service): RedirectResponse
     {

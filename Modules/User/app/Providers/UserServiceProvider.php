@@ -7,7 +7,7 @@ namespace Modules\User\Providers;
 use Illuminate\Console\Scheduling\Schedule;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 
-final class UserServiceProvider extends ModuleServiceProvider
+class UserServiceProvider extends ModuleServiceProvider
 {
     /**
      * The name of the module.

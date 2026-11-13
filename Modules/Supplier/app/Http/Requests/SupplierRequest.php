@@ -11,7 +11,7 @@ use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
-final class SupplierRequest extends FormRequest
+class SupplierRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -19,7 +19,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]
-final class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<UserFactory> */
     use AuditableTrait, HasApiTokens, HasFactory, Notifiable;
@@ -32,6 +32,20 @@ final class User extends Authenticatable implements Auditable
     public function observation(): HasOne
     {
         return $this->hasOne(UserObservation::class);
+    }
+
+    /**
+     * Retorna o nome completo do usuario.
+     *
+     * @return string
+     */
+    public function fullName(): string
+    {
+        if ($this->last_name !== null) {
+            return $this->name.' '.$this->last_name;
+        }
+
+        return $this->name.' - ';
     }
 
     /**

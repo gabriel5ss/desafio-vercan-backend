@@ -1,4 +1,4 @@
-<x-form.card title="Histórico de alterações" :id="'audit-history-'.md5($root_type.':'.$root_id)" :collapsed="false">
+<x-form.card title="Histórico de alterações" :id="'audit-history-'.$root_type.'-'.$root_id" :collapsed="false">
     <div data-audit-history>
         <p class="text-muted">Cada grupo reúne as alterações realizadas na mesma operação.</p>
         <div class="table-responsive">

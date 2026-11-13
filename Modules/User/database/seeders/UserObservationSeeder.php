@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 use Modules\User\Models\User;
 
 /** Adiciona uma observação de demonstração ao primeiro usuário existente. */
-final class UserObservationSeeder extends Seeder
+class UserObservationSeeder extends Seeder
 {
     /** Cria o exemplo somente quando houver um usuário e nenhuma observação relacionada. */
     public function run(): void

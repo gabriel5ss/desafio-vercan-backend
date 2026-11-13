@@ -12,7 +12,7 @@ use Modules\User\Models\User;
 use Tests\TestCase;
 
 /** Verifica a recuperação de senha após a mudança da model. */
-final class PasswordResetControllerTest extends TestCase
+class PasswordResetControllerTest extends TestCase
 {
     private User $user;
 

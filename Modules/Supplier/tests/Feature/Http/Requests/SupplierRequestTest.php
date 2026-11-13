@@ -17,7 +17,7 @@ use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-final class SupplierRequestTest extends TestCase
+class SupplierRequestTest extends TestCase
 {
     use AdditionalAssertions;
 
@@ -240,6 +240,24 @@ final class SupplierRequestTest extends TestCase
         $this->assertDatabaseHas('companies', ['id' => $company->id, 'cnpj' => $data['cnpj']]);
         Http::assertSentCount(1);
 
+        $this->assertAuthenticatedAs($this->user);
+    }
+
+    /** @param array<string, mixed> $data */
+    #[DataProvider('companyData')]
+    public function test_store_failed(array $data): void
+    {
+        $data['state_id'] = $this->city->state_id;
+        $data['city_id'] = $this->city->id;
+        Http::fake([
+            config('services.receitaws_url').'04252011000110' => Http::response(['status' => 'ERROR'], 503),
+        ]);
+
+        $response = $this->postJson(route('suppliers.store'), $data);
+
+        $response->assertServiceUnavailable();
+        $this->assertDatabaseCount('suppliers', 0);
+        $this->assertDatabaseMissing('companies', ['cnpj' => '04252011000110']);
         $this->assertAuthenticatedAs($this->user);
     }
 

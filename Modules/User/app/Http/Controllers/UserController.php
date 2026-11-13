@@ -13,7 +13,7 @@ use Modules\User\Models\User;
 use Modules\User\Services\UserService;
 
 /** Gerencia as telas de usuários com acesso autenticado, como no módulo Supplier. */
-final class UserController extends Controller
+class UserController extends Controller
 {
     /**
      * Exibe os usuários em uma listagem paginada.

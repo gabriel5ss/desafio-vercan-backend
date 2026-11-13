@@ -6,7 +6,7 @@ namespace Modules\Supplier\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
-final class EventServiceProvider extends ServiceProvider
+class EventServiceProvider extends ServiceProvider
 {
     /**
      * The event handler mappings for the application.

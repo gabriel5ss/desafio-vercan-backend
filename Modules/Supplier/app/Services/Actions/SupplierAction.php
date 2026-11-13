@@ -10,7 +10,7 @@ use Modules\Supplier\Models\Company;
 use Modules\Supplier\Models\Individual;
 use Modules\Supplier\Models\Supplier;
 
-final class SupplierAction
+class SupplierAction
 {
     /**
      * @param array<string, mixed> $data

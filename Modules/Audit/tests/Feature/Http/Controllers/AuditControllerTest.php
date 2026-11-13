@@ -11,7 +11,7 @@ use OwenIt\Auditing\Models\Audit;
 use Tests\TestCase;
 
 /** Verifica a preservação das rotas e da consulta de auditorias. */
-final class AuditControllerTest extends TestCase
+class AuditControllerTest extends TestCase
 {
     private User $user;
 
@@ -21,17 +21,6 @@ final class AuditControllerTest extends TestCase
 
         $this->withoutVite();
         $this->user = User::factory()->create(['name' => 'Alfa']);
-    }
-
-    /**
-     * Fornece identificadores de raízes sem histórico correspondente.
-     *
-     * @return iterable<string, array{string, int}>
-     */
-    public static function missing_roots(): iterable
-    {
-        yield 'tipo sem histórico' => ['states', 1];
-        yield 'registro inexistente' => ['users', 999999];
     }
 
     /** Confere a tela existente e o endereço usado pela tabela. */

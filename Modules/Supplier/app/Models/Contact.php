@@ -13,7 +13,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
 #[UseFactory(ContactFactory::class)]
-final class Contact extends Model implements Auditable
+class Contact extends Model implements Auditable
 {
     use AuditableTrait;
 
